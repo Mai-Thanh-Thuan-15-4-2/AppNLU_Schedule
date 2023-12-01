@@ -9,8 +9,11 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^4.5.1",
+    "@react-native-async-storage/async-storage": "1.18.2",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
+    "@react-navigation/stack": "^6.3.20",
     "expo": "~49.0.15",
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
@@ -20,6 +23,9 @@
     "react-native-calendars": "^1.1302.0",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-element-dropdown": "^2.10.0",
+    "react-native-gesture-handler": "~2.12.0",
+    "react-native-reanimated": "~3.3.0",
+    "react-native-toast-message": "^2.1.7",
     "react-native-vector-icons": "^10.0.2",
     "react-native-vietnamese-calendars": "^0.0.17"
   },
