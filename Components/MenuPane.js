@@ -5,6 +5,8 @@ import Schedule from './Schedule';
 import Notification from './Notification';
 import Login from './Login';
 import RegisterClass from './RegisterClass';
+import Extensions from './Extensions';
+import About from './About';
 
 const Tab = createBottomTabNavigator();
 
@@ -36,9 +38,10 @@ const MenuPane = () => {
       })}
     >
       <Tab.Screen name="Lịch học" component={Schedule} />
-      <Tab.Screen name="Tiện ích" component={RegisterClass}/>
+      {/* <Tab.Screen name="ĐKMH" component={RegisterClass}/> */}
+      <Tab.Screen name="Tiện ích" component={Extensions}/>
       <Tab.Screen name="Thông báo" component={Notification}/>
-      <Tab.Screen name="Hồ sơ" component={Notification}/>
+      <Tab.Screen name="Hồ sơ" component={About}/>
     </Tab.Navigator>
   );
 };

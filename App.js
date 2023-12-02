@@ -4,13 +4,19 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Toast from 'react-native-toast-message';
 import MenuPane from './Components/MenuPane';
 import Login from './Components/Login';
+import ReportBug from './Components/ReportBug';
+import Profile from './Components/Profile';
+import About from './Components/About';
 const App = () => {
   const Stack = createStackNavigator();
   return (
     
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false, gestureEnabled: false }}>
-          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Login" component={Login}/>
+          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="About" component={About} />
+          <Stack.Screen name="ReportBug" component={ReportBug} />
           <Stack.Screen name="MenuPane" component={MenuPane} options={{ gestureEnabled: false }} />
         </Stack.Navigator>
         <Toast />
