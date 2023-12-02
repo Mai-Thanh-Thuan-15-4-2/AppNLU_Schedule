@@ -1,29 +1,40 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { fonts } from '../BaseStyle/Style';
+import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const items = [
-  { title: 'ĐKMH', icon: 'book' },
-  { title: 'Xem điểm', icon: 'bar-chart' },
-  { title: 'Lịch thi', icon: 'calendar' },
-  { title: 'Chat GPT', icon: 'chatbubble-outline' },
-  { title: 'Chương trình đào tạo', icon: 'book' },
-  { title: 'Học phí', icon: 'cash-outline' },
+  { title: 'ĐKMH', icon: 'book', screen: 'RegisterClass' },
+  { title: 'Xem điểm', icon: 'bar-chart', screen: 'XemDiemScreen' },
+  { title: 'Lịch thi', icon: 'calendar', screen: 'LichThiScreen' },
+  { title: 'Chat GPT', icon: 'chatbubble-outline', screen: 'ChatGPTScreen' },
+  { title: 'Chương trình đào tạo', icon: 'book', screen: 'ChuongTrinhDaoTaoScreen' },
+  { title: 'Học phí', icon: 'cash-outline', screen: 'HocPhiScreen' },
 ];
 
-const GridItem = ({ title, icon }) => (
-  <TouchableOpacity style={styles.gridItem}>
-    <Icon name={icon} style={styles.iconStyle} />
-    <Text>{title}</Text>
-  </TouchableOpacity>
-);
+const GridItem = ({ title, icon, screen }) => {
+  const navigation = useNavigation();
+
+  const handlePress = () => {
+    navigation.navigate(screen);
+  };
+
+  
+
+  return (
+    <TouchableOpacity style={styles.gridItem} onPress={handlePress}>
+      <Icon name={icon} style={styles.iconStyle} />
+      <Text>{title}</Text>
+    </TouchableOpacity>
+  );
+};
 
 const Extensions = () => (
   <View style={styles.container}>
     <View style={styles.gridContainer}>
       {items.map((item, index) => (
-        <GridItem key={index} title={item.title} icon={item.icon} />
+        <GridItem key={index} title={item.title} icon={item.icon} screen={item.screen} />
       ))}
     </View>
   </View>
@@ -57,12 +68,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   gridItemText: {
-    fontSize: 24,
+    
   },
   iconStyle: {
     color: '#0695e3',
-    fontWeight: 'bold',
-    fontSize: 24,
+    fontWeight: 600,
+    fontSize: 50,
     
   },
 });

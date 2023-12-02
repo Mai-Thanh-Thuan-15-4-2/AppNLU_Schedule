@@ -6,6 +6,7 @@ const Profile = ({ navigation }) => {
     const handleComeBack = () => {
         navigation.goBack();
       };
+    
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Thông Tin Tài Khoản</Text>

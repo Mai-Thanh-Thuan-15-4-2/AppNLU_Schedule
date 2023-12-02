@@ -3,8 +3,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Schedule from './Schedule';
 import Notification from './Notification';
-import Login from './Login';
-import RegisterClass from './RegisterClass';
 import Extensions from './Extensions';
 import About from './About';
 import {colors, buttonStyles} from '../BaseStyle/Style';
