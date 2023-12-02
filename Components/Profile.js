@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { colors } from '../BaseStyle/Style';
 
-const Profile = () => {
+const Profile = ({ navigation }) => {
     const handleComeBack = () => {
-        navigation.navigate('About');
+        navigation.goBack();
       };
   return (
     <View style={styles.container}>
@@ -66,6 +67,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+ 
   },
   heading: {
     fontSize: 24,
@@ -89,10 +91,13 @@ const styles = StyleSheet.create({
   },
   value: {},
   button: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: colors.primary,
     padding: 10,
     borderRadius: 8,
-    width:24,
+    width: 100,
+    marginLeft: 135,
+    marginTop: 20,
+    alignItems: 'center',
   },
 });
 

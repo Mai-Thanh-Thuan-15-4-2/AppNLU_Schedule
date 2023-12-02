@@ -1,19 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { fonts } from '../BaseStyle/Style';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const items = [
-  { title: 'ĐKMH', icon: '📚' },
-  { title: 'Xem điểm', icon: '📊' },
-  { title: 'Lịch thi', icon: '🗓️' },
-  { title: 'Chat GPT', icon: '😂' },
-  { title: 'Chương trình đào tạo', icon: '📘' },
-  { title: 'Học phí', icon: '💰' },
+  { title: 'ĐKMH', icon: 'book' },
+  { title: 'Xem điểm', icon: 'bar-chart' },
+  { title: 'Lịch thi', icon: 'calendar' },
+  { title: 'Chat GPT', icon: 'chatbubble-outline' },
+  { title: 'Chương trình đào tạo', icon: 'book' },
+  { title: 'Học phí', icon: 'cash-outline' },
 ];
 
 const GridItem = ({ title, icon }) => (
   <TouchableOpacity style={styles.gridItem}>
-    <Text style={styles.gridItemText}>{icon}</Text>
+    <Icon name={icon} style={styles.iconStyle} />
     <Text>{title}</Text>
   </TouchableOpacity>
 );
@@ -39,18 +40,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+   
   },
   gridItem: {
     width: '48%',
-    height: 100,
+    height: 150,
     marginVertical: 10,
     backgroundColor: '#e0e0e0',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
   gridItemText: {
     fontSize: 24,
+  },
+  iconStyle: {
+    color: '#0695e3',
+    fontWeight: 'bold',
+    fontSize: 24,
+    
   },
 });
 

@@ -7,6 +7,7 @@ import Login from './Login';
 import RegisterClass from './RegisterClass';
 import Extensions from './Extensions';
 import About from './About';
+import {colors, buttonStyles} from '../BaseStyle/Style';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,7 +15,7 @@ const MenuPane = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarActiveTintColor: 'tomato',
+        tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: { justifyContent: "center", display: 'flex'},
         tabBarStyle: { display: 'flex' },

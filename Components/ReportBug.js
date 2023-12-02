@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { colors } from '../BaseStyle/Style';
 
 const ReportBug = ({ navigation }) => {
   const [bugTitle, setBugTitle] = useState('');
@@ -30,7 +31,7 @@ const ReportBug = ({ navigation }) => {
         onChangeText={(text) => setBugDescription(text)}
       />
       <TouchableOpacity style={styles.button} onPress={handleSubmitBug}>
-        <Text>Submit Bug</Text>
+        <Text>Submit</Text>
       </TouchableOpacity>
     </View>
   );
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   button: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: colors.primary,
     padding: 10,
     borderRadius: 8,
   },
