@@ -30,14 +30,12 @@ const MenuPane = () => {
             iconName = focused ? 'notifications' : 'notifications-outline';
           } else if (route.name === 'Hồ sơ') {
             iconName = focused ? 'person' : 'person-outline';
-          }
-
+          } 
           return <Icon name={iconName} size={iconSize} color="#000" />;
         },
       })}
     >
       <Tab.Screen name="Lịch học" component={Schedule} />
-      {/* <Tab.Screen name="ĐKMH" component={RegisterClass}/> */}
       <Tab.Screen name="Tiện ích" component={Extensions}/>
       <Tab.Screen name="Thông báo" component={Notification}/>
       <Tab.Screen name="Hồ sơ" component={About}/>

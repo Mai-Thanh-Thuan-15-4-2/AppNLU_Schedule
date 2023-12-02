@@ -8,6 +8,7 @@ import ReportBug from './Components/ReportBug';
 import Profile from './Components/Profile';
 import About from './Components/About';
 import RegisterClass from './Components/RegisterClass';
+import Score from './Components/Score';
 const App = () => {
   const Stack = createStackNavigator();
   return (
@@ -15,12 +16,14 @@ const App = () => {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false, gestureEnabled: false }}>
           <Stack.Screen name="Login" component={Login}/>
-          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="Profile" component={Profile} options={{ gestureEnabled: true }} />
           <Stack.Screen name="RegisterClass" component={RegisterClass} />
-          <Stack.Screen name="About" component={About} />
+          <Stack.Screen name="About" component={About} options={{ gestureEnabled: true }}/>
+          <Stack.Screen name="Score" component={Score} options={{ gestureEnabled: true }}/>
           <Stack.Screen name="ReportBug" component={ReportBug} />
           <Stack.Screen name="MenuPane" component={MenuPane} options={{ gestureEnabled: false }} />
         </Stack.Navigator>
+          
         <Toast />
       </NavigationContainer>
   );

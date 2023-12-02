@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { colors } from '../BaseStyle/Style';
 
 const items = [
   { title: 'ĐKMH', icon: 'book', screen: 'RegisterClass' },
-  { title: 'Xem điểm', icon: 'bar-chart', screen: 'XemDiemScreen' },
+  { title: 'Xem điểm', icon: 'bar-chart', screen: 'Score' }, // đổi link screen ở đây
   { title: 'Lịch thi', icon: 'calendar', screen: 'LichThiScreen' },
   { title: 'Chat GPT', icon: 'chatbubble-outline', screen: 'ChatGPTScreen' },
   { title: 'Chương trình đào tạo', icon: 'book', screen: 'ChuongTrinhDaoTaoScreen' },
@@ -19,8 +20,6 @@ const GridItem = ({ title, icon, screen }) => {
   const handlePress = () => {
     navigation.navigate(screen);
   };
-
-  
 
   return (
     <TouchableOpacity style={styles.gridItem} onPress={handlePress}>
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
     width: '48%',
     height: 150,
     marginVertical: 10,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: colors.backgroundColor,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
@@ -71,7 +70,7 @@ const styles = StyleSheet.create({
     
   },
   iconStyle: {
-    color: '#0695e3',
+    color: colors.primary,
     fontWeight: 600,
     fontSize: 50,
     
