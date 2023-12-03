@@ -3,8 +3,20 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Schedule from './Schedule';
 import Notification from './Notification';
+import NotificationDetail from './NotificationDetail';
 import Login from './Login';
 import RegisterClass from './RegisterClass';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const NotificationStack = createStackNavigator();
+
+const NotificationStackScreen = () => (
+  <NotificationStack.Navigator screenOptions={{ headerShown: false}} >
+  <NotificationStack.Screen name="Tất cả thông báo" component={Notification} />
+  <NotificationStack.Screen name="Thông Báo Chi Tiết" component={NotificationDetail} options={{ headerShown: true }}  />
+</NotificationStack.Navigator>
+
+);
 
 const Tab = createBottomTabNavigator();
 
@@ -37,7 +49,7 @@ const MenuPane = () => {
     >
       <Tab.Screen name="Lịch học" component={Schedule} />
       <Tab.Screen name="Tiện ích" component={RegisterClass}/>
-      <Tab.Screen name="Thông báo" component={Notification}/>
+      <Tab.Screen name="Thông báo" component={NotificationStackScreen}/>
       <Tab.Screen name="Hồ sơ" component={Notification}/>
     </Tab.Navigator>
   );

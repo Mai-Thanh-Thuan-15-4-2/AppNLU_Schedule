@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, View, Text, FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const NotificationList = [
     { id: '1', title: 'Thông báo 1', content: 'Nội dung ngắn của thông báo 1' },
@@ -16,8 +17,17 @@ const NotificationList = [
   
 
 const Notification = () => {
+  const navigation = useNavigation();
+
+  const handlePress = (id) => {
+      // Tìm thông báo với id tương ứng
+      const notification = NotificationList.find((notification) => notification.id === id);
+
+      // Chuyển đến trang "Thông Báo Chi Tiết" với thông tin của thông báo
+      navigation.navigate('Thông Báo Chi Tiết', notification);
+  };
     const renderItem = ({ item }) => (
-        <View style={styles.notification}>
+        <View style={styles.notification}  onTouchEnd={() => handlePress(item.id)}>
           <Text style={{color: "green", fontWeight: 'bold'}}>{item.title}</Text>
           <Text>{item.content}</Text>
         </View>
