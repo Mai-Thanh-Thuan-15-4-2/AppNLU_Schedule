@@ -15,23 +15,23 @@ const ReportBug = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Report Bug</Text>
-      <TextInput
+      {/* <Text style={styles.header}>Report Bug</Text> */}
+      {/* <TextInput
         style={styles.input}
         placeholder="Bug Title"
         value={bugTitle}
         onChangeText={(text) => setBugTitle(text)}
-      />
+      /> */}
       <TextInput
-        style={[styles.input, { height: 100 }]}
-        placeholder="Bug Description"
+        style={[styles.input]}
+        placeholder="Lỗi gì nè??"
         multiline
-        numberOfLines={4}
+        numberOfLines={10}
         value={bugDescription}
         onChangeText={(text) => setBugDescription(text)}
       />
       <TouchableOpacity style={styles.button} onPress={handleSubmitBug}>
-        <Text>Submit</Text>
+        <Text style={{color: colors.white}}>Gửi</Text>
       </TouchableOpacity>
     </View>
   );
@@ -49,18 +49,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    width: '80%',
-    height: 40,
+    width: '90%',
+    height: 200,
     borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 20,
     paddingLeft: 10,
+    paddingVertical: 10,
     borderRadius: 8,
+    textAlign: 'justify',
   },
   button: {
     backgroundColor: colors.primary,
-    padding: 10,
+    padding: 12,
+    paddingHorizontal: 30,
     borderRadius: 8,
+    color: colors.white,
   },
 });
 

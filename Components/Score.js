@@ -80,13 +80,12 @@ const Score = () => {
               <View style={styles.subjectsContainer}>
                 {item.scores.map((subject) => (
                   <View style={styles.subjectContainer} key={subject.idSubject}>
-                    <Text>{`${subject.idSubject} - ${subject.subjectName}`}</Text>
-                    <View style={styles.scoreContainer} key={subject.idSubject}>
-                      <Text>{`${subject.idSubject} - ${subject.subjectName}`}</Text>
-                      <Text>{`Số tín chỉ: ${subject.grade}`}</Text>
-                      <Text>{`Điểm TK hệ 10: ${subject.grade}`}</Text>
-                      <Text style={styles.scoreStyle}>{`Điểm TK hệ 4: ${subject.charGrade}`}</Text>
-                      <Text style={styles.scoreStyle}>{`Điểm TK (C): ${subject.charGrade}`}</Text>
+                    <Text style={styles.subjectName}>{`${subject.idSubject} - ${subject.subjectName}`}</Text>
+                    <View style={styles.scoresContainer} key={subject.idSubject}>
+                      <Text style={styles.scoreContainer}>{`Số tín chỉ: ${subject.grade}`}</Text>
+                      <Text style={[styles.scoreStyle, styles.scoreContainer]}>{`Điểm TK hệ 10: ${subject.grade}`}</Text>
+                      <Text style={[styles.scoreStyle, styles.scoreContainer]}>{`Điểm TK hệ 4: ${subject.g}`}</Text>
+                      <Text style={[styles.scoreStyle, styles.scoreContainer]}>{`Điểm TK (C): ${subject.charGrade}`}</Text>
                     </View>
                   </View>
 
@@ -122,13 +121,13 @@ const Score = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
   },
   semesterContainer: {
-    marginBottom: 16,
+    marginBottom: 32,
   },
   semesterText: {
-    fontSize: 18,
+    fontSize: 21,
     fontWeight: 'bold',
     marginBottom: 8,
   },
@@ -152,6 +151,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
+  },
+  subjectName:{
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  scoresContainer: {
+    display: 'flex',
+    flexDirection: "row",
+    flexWrap: 'wrap',
+    justifyContent:'space-between',
+    marginBottom: 3,
+    padding: 6,
   },
   scoreContainer: {
     width: '48%',

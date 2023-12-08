@@ -6,6 +6,7 @@ import Notification from './Notification';
 import Extensions from './Extensions';
 import About from './About';
 import {colors, buttonStyles} from '../BaseStyle/Style';
+import EducationFees from './EducationFees';
 
 const Tab = createBottomTabNavigator();
 
@@ -37,7 +38,7 @@ const MenuPane = () => {
     >
       <Tab.Screen name="Lịch học" component={Schedule} />
       <Tab.Screen name="Tiện ích" component={Extensions}/>
-      <Tab.Screen name="Thông báo" component={Notification}/>
+      <Tab.Screen name="Thông báo" component={EducationFees}/>
       <Tab.Screen name="Hồ sơ" component={About}/>
     </Tab.Navigator>
   );

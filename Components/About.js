@@ -24,24 +24,28 @@ const About = () => {
 
   return (
     <View style={styles.container}>
-    {/* Item Xem thông tin tài khoản */}
-    <TouchableOpacity style={styles.item} onPress={handleViewProfile}>
-      <Icon name="information-circle" style={styles.icon} />
-      <Text style={styles.itemText}>Thông tin</Text>
-    </TouchableOpacity>
+      {/* Item Xem thông tin tài khoản */}
+      <TouchableOpacity style={styles.item} onPress={handleViewProfile}>
+        <Icon name="person" style={styles.icon} />
+        <Text style={styles.itemText}>Thông tin</Text>
+      </TouchableOpacity>
 
-    {/* Item Báo cáo lỗi */}
-    <TouchableOpacity style={styles.item} onPress={handleReportBug}>
-      <Icon name="bug" style={styles.icon}  />
-      <Text style={styles.itemText}>Báo lỗi</Text>
-    </TouchableOpacity>
-
-    {/* Item Đăng xuất */}
-    <TouchableOpacity style={styles.item} onPress={handleLogout}>
-      <Icon name="log-out" style={styles.icon_logout}  />
-      <Text style={styles.itemText}>Đăng xuất</Text>
-    </TouchableOpacity>
-  </View>
+      {/* Item Báo cáo lỗi */}
+      <TouchableOpacity style={styles.item} onPress={handleReportBug}>
+        <Icon name="bug" style={styles.icon} />
+        <Text style={styles.itemText}>Hỗ trợ</Text>
+      </TouchableOpacity>
+      {/* Item VIP */}
+      <TouchableOpacity style={styles.item} onPress={handleLogout}>
+        <Icon name="star" style={styles.icon_vip} />
+        <Text style={styles.itemText}>VIP Member</Text>
+      </TouchableOpacity>
+      {/* Item Đăng xuất */}
+      <TouchableOpacity style={styles.item} onPress={handleLogout}>
+        <Icon name="log-out" style={styles.icon_logout} />
+        <Text style={styles.itemText}>Đăng xuất</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -79,12 +83,16 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   icon: {
-    fontSize: 30,
+    fontSize: 50,
     color: colors.primary,
   },
-  icon_logout:{
-    fontSize: 30,
+  icon_logout: {
+    fontSize: 50,
     color: colors.dangerous,
+  },
+  icon_vip: {
+    fontSize: 50,
+    color: colors.vip,
   }
 });
 

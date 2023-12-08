@@ -8,6 +8,7 @@ export const colors = {
     success: "#4BB543",
     backgroundColor: '#F5EFE7',
     borderColor: "#0E2954",
+    vip: "#F5EA5A",
   };
 
   
@@ -16,6 +17,7 @@ export const colors = {
       backgroundColor: colors.primary,
       padding: 10,
       borderRadius: 8,
+      
     },
    
   };

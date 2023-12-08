@@ -1,85 +1,114 @@
-import React, { useState } from 'react';
-import { View, Text, Picker, FlatList, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { ListItem } from 'react-native-elements';
 
 const EducationFees = () => {
-  const [selectedSemester, setSelectedSemester] = useState('');
-  const [feesData, setFeesData] = useState([
-    // Mảng chứa dữ liệu học phí, ví dụ:
+  const feesData = [
     {
-      subjectName: 'Môn 1',
-      credit: 3,
-      unitPrice: 100000, // Đơn giá một tín chỉ
-      discount: 0,
+      semester: 'Học kì 1 năm 2023-2024',
+      tuitionFee: 1000000,
+      discount: 200000,
+      dueFee: 800000,
+      paidFee: 600000,
+      remainingBalance: 0,
     },
     {
-      subjectName: 'Môn 2',
-      credit: 4,
-      unitPrice: 120000,
-      discount: 20000, // Miễn giảm
+      semester: 'Học kì 1 năm 2023-2024',
+      tuitionFee: 1000000,
+      discount: 200000,
+      dueFee: 800000,
+      paidFee: 600000,
+      remainingBalance: 0,
     },
-    // Thêm các môn khác tương tự
-  ]);
+    // Thêm các mục khác tương tự ở đây
+  ];
 
-  const getTotalFees = () => {
-    const totalCredit = feesData.reduce((total, item) => total + item.credit, 0);
-    const totalAmount = feesData.reduce(
-      (total, item) => total + item.credit * (item.unitPrice - item.discount),
-      0
-    );
-    return { totalCredit, totalAmount };
-  };
-
-  const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Text>{`Môn học: ${item.subjectName}`}</Text>
-      <Text>{`Số tín chỉ: ${item.credit}`}</Text>
-      <Text>{`Đơn giá/tín chỉ: ${item.unitPrice}`}</Text>
-      <Text>{`Thành tiền: ${item.credit * (item.unitPrice - item.discount)}`}</Text>
-      <Text>{`Miễn giảm: ${item.discount}`}</Text>
-      <Text>{`Phải thu: ${item.credit * (item.unitPrice - item.discount)}`}</Text>
-    </View>
+  const renderItem = ({ item, index }) => (
+    <ListItem containerStyle={styles.listItem}>
+      <ListItem.Content>
+        <View style={styles.semesterContainer}>
+          <Text style={styles.semesterText}>{item.semester}</Text>
+        </View>
+        <View style={styles.feeContainer}>
+          <Text style={[styles.feeText, styles.leftBorder, styles.bottomBorder, styles.topBorder]}>HP chưa giảm: {item.tuitionFee}</Text>
+          <Text style={[styles.feeText, styles.rightBorder, styles.bottomBorder, styles.topBorder]}>Miễn giảm: {item.discount}</Text>
+          <Text style={[styles.feeText, styles.leftBorder, styles.bottomBorder]}>HP phải thu: {item.dueFee}</Text>
+          <Text style={[styles.feeText, styles.rightBorder, styles.bottomBorder]}>HP đã thu: {item.paidFee}</Text>
+          <Text style={[styles.feeText, styles.remainingBalanceText]}>
+            Còn nợ: {item.remainingBalance}
+          </Text>
+        </View>
+      </ListItem.Content>
+    </ListItem>
   );
 
-  return (
-    <View style={styles.container}>
-      <Picker
-        selectedValue={selectedSemester}
-        onValueChange={(itemValue, itemIndex) => setSelectedSemester(itemValue)}
-      >
-        <Picker.Item label="Học kì 1 năm 2022-2023" value="semester1_2022_2023" />
-        {/* Thêm các học kì khác nếu cần */}
-      </Picker>
+  // Tính tổng HP
+  const totalTuitionFee = feesData.reduce((total, item) => total + item.tuitionFee, 0);
 
+  // Thêm item tổng cộng
+  feesData.push({
+    semester: 'Tổng cộng',
+    tuitionFee: totalTuitionFee,
+    discount: 0,
+    dueFee: 0,
+    paidFee: 0,
+    remainingBalance: 0,
+  });
+
+  return (
+    <View>
       <FlatList
         data={feesData}
-        renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
+        renderItem={renderItem}
       />
-
-      <View style={styles.totalContainer}>
-        <Text>{`Tổng học phí: ${getTotalFees().totalAmount}`}</Text>
-        <Text>{`Tổng tín chỉ: ${getTotalFees().totalCredit}`}</Text>
-        <Text>{`Tổng phải thu: ${getTotalFees().totalAmount}`}</Text>
-      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
+  listItem: {
+    borderRadius: 10,
+    marginBottom: 10,
+    backgroundColor: '#fff', // Màu nền của ListItem
+    borderWidth: 1, // Độ rộng đường viền
+    borderColor: '#ddd', // Màu đường viền
   },
-  itemContainer: {
-    width: '30%',
-    marginBottom: 16,
-    borderWidth: 1,
-    padding: 8,
+  semesterContainer: {
+    marginBottom: 10,
   },
-  totalContainer: {
-    marginTop: 16,
+  semesterText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  feeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  feeText: {
+    width: '50%', // Hiển thị 2 cột
+    marginBottom: 5,
+    padding: 10, // Khoảng cách giữa nội dung và đường viền
+  },
+  topBorder: {
     borderTopWidth: 1,
-    paddingTop: 8,
+    borderTopColor: '#ddd',
+  },
+  leftBorder: {
+    borderRightWidth: 1,
+    borderRightColor: '#ddd',
+  },
+  rightBorder: {
+    borderLeftWidth: 1,
+    borderLeftColor: '#ddd',
+  },
+  bottomBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  remainingBalanceText: {
+    fontWeight: 'bold',
+    color: 'red', // Màu cho "Còn nợ"
   },
 });
 
