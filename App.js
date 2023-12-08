@@ -9,6 +9,7 @@ import Profile from './Components/Profile';
 import About from './Components/About';
 import RegisterClass from './Components/RegisterClass';
 import Score from './Components/Score';
+import EducationFees from './Components/EducationFees';
 const App = () => {
   const Stack = createStackNavigator();
   return (
@@ -16,11 +17,12 @@ const App = () => {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false, gestureEnabled: false }}>
           <Stack.Screen name="Login" component={Login}/>
-          <Stack.Screen name="Profile" component={Profile} options={{ gestureEnabled: true }} />
-          <Stack.Screen name="RegisterClass" component={RegisterClass} />
-          <Stack.Screen name="About" component={About} options={{ gestureEnabled: true }}/>
-          <Stack.Screen name="Score" component={Score} options={{ gestureEnabled: true }}/>
-          <Stack.Screen name="ReportBug" component={ReportBug} />
+          <Stack.Screen name="Thông tin" component={Profile} options={{headerShown: true, gestureEnabled: true }} />
+          <Stack.Screen name="RegisterClass" component={RegisterClass} options={{headerShown: true, gestureEnabled: true }}/>
+          <Stack.Screen name="About" component={About} options={{headerShown: true, gestureEnabled: true }}/>
+          <Stack.Screen name="Xem điểm" component={Score} options={{headerShown: true, gestureEnabled: true }}/>
+          <Stack.Screen name="Học Phí" component={EducationFees} options={{headerShown: true, gestureEnabled: true }}/>
+          <Stack.Screen name="Hỗ trợ" component={ReportBug} options={{headerShown: true, gestureEnabled: true }} />
           <Stack.Screen name="MenuPane" component={MenuPane} options={{ gestureEnabled: false }} />
         </Stack.Navigator>
           

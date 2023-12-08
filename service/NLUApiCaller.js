@@ -244,7 +244,7 @@ export async function getScoreBoard() {
                 const subjectName = item.ten_mon;
                 const grade = item.diem_tk;
                 const charGrade = item.diem_tk_chu;
-                const credit = item.numCredit;
+                const credit = item.so_tin_chi;
                 const grade4 = item.diem_tk_so;
                 const grades = new Grade(idSubject, subjectName, grade, charGrade, credit, grade4);
                 scores.push(grades);

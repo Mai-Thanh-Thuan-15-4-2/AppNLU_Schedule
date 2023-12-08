@@ -9,7 +9,7 @@ const About = () => {
 
   const handleViewProfile = () => {
     // Điều hướng đến màn hình xem thông tin tài khoản
-    navigation.navigate('Profile');
+    navigation.navigate('Thông tin');
   };
 
   const handleLogout = () => {
@@ -19,7 +19,7 @@ const About = () => {
 
   const handleReportBug = () => {
     // Điều hướng đến màn hình báo cáo lỗi
-    navigation.navigate('ReportBug');
+    navigation.navigate('Hỗ trợ');
   };
 
   return (

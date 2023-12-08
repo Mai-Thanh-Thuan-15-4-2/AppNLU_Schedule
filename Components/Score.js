@@ -1,30 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Toast from 'react-native-toast-message';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { colors } from '../BaseStyle/Style';
 import { getScoreBoard } from '../service/NLUApiCaller';
 
-// const scoresData = [
-//   {
-//     semester: 'Học kỳ 1 năm 2022-2023',
-//     subjects: [
-//       { code: 'M001', name: 'Toán cao cấp', credits: 4, finalExam: 8, averageGrade4: 3.2, averageGrade10: 7.5 },
-//       { code: 'P002', name: 'Lập trình di động', credits: 3, finalExam: 9, averageGrade4: 3.7, averageGrade10: 8.5 },
-//       { code: 'P003', name: 'Lập trình di động nâng cao', credits: 3, finalExam: 9, averageGrade4: 3.7, averageGrade10: 8.5 },
-//       // Thêm các môn học khác tương tự
-//     ],
-//   },
-//   {
-//     semester: 'Học kỳ 2 năm 2022-2023',
-//     subjects: [
-//       { code: 'M001', name: 'Toán cao cấp', credits: 4, finalExam: 8, averageGrade4: 3.2, averageGrade10: 7.5 },
-//       { code: 'P002', name: 'Lập trình di động', credits: 3, finalExam: 9, averageGrade4: 3.7, averageGrade10: 8.5 },
-//       { code: 'P003', name: 'Lập trình di động nâng cao', credits: 3, finalExam: 9, averageGrade4: 3.7, averageGrade10: 8.5 },
-//       // Thêm các môn học khác tương tự
-//     ],
-//   },
-//   // Thêm thông tin cho các học kỳ khác
-// ];
+
 
 const calculateTotalCredits = (subjects) => {
   return subjects.reduce((total, subject) => total + subject.credits, 0);
@@ -38,24 +18,17 @@ const calculateWeightedAverage = (subjects, gradeType) => {
 
 const Score = () => {
   const [scoreData, setScoreData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchScoreData = async () => {
-      try {
-        const data = await getScoreBoard();
-        if (data.length > 0) {
-          setScoreData(data);
 
-        } else {
-          Toast.show({
-            type: 'error',
-            text1: 'Có lỗi xảy ra!',
-            text2: 'Không thể lấy dữ liệu từ trang ĐKMH',
-            visibilityTime: 2000,
-            autoHide: true,
-          });
-        }
-      } catch (error) {
+      setIsLoading(true)
+      const data = await getScoreBoard();
+      if (data.length > 0) {
+        setScoreData(data);
+
+      } else {
         Toast.show({
           type: 'error',
           text1: 'Có lỗi xảy ra!',
@@ -64,6 +37,8 @@ const Score = () => {
           autoHide: true,
         });
       }
+      setIsLoading(false)
+
     };
 
     fetchScoreData();
@@ -82,9 +57,9 @@ const Score = () => {
                   <View style={styles.subjectContainer} key={subject.idSubject}>
                     <Text style={styles.subjectName}>{`${subject.idSubject} - ${subject.subjectName}`}</Text>
                     <View style={styles.scoresContainer} key={subject.idSubject}>
-                      <Text style={styles.scoreContainer}>{`Số tín chỉ: ${subject.grade}`}</Text>
+                      <Text style={styles.scoreContainer}>{`Số tín chỉ: ${subject.numCredit}`}</Text>
                       <Text style={[styles.scoreStyle, styles.scoreContainer]}>{`Điểm TK hệ 10: ${subject.grade}`}</Text>
-                      <Text style={[styles.scoreStyle, styles.scoreContainer]}>{`Điểm TK hệ 4: ${subject.g}`}</Text>
+                      <Text style={[styles.scoreStyle, styles.scoreContainer]}>{`Điểm TK hệ 4: ${subject.grade4}`}</Text>
                       <Text style={[styles.scoreStyle, styles.scoreContainer]}>{`Điểm TK (C): ${subject.charGrade}`}</Text>
                     </View>
                   </View>
@@ -114,6 +89,11 @@ const Score = () => {
           </View>
         )}
       />
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2bc250" />
+        </View>) : (<></>)
+      }
     </View>
   );
 };
@@ -152,7 +132,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  subjectName:{
+  subjectName: {
     fontSize: 17,
     fontWeight: 'bold',
     color: colors.primary,
@@ -161,7 +141,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: "row",
     flexWrap: 'wrap',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     marginBottom: 3,
     padding: 6,
   },
@@ -186,6 +166,19 @@ const styles = StyleSheet.create({
   scoreStyleCK: {
     fontWeight: 'bold',
     color: colors.success,
+  },
+  loadingContainer: {
+    position: 'absolute',
+    zIndex: 1,
+    backgroundColor: '#bec4c2',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -60 }, { translateY: -75 }],
+    width: 150,
+    height: 150,
+    justifyContent: 'center',
+    borderRadius: 10,
+    opacity: 0.8,
   },
 });
 
