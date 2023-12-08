@@ -3,70 +3,15 @@ import { TouchableOpacity, FlatList, View, Text, Button, TextInput, Modal } from
 import { Dropdown } from 'react-native-element-dropdown';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment/min/moment-with-locales';
+import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Alert } from 'react-native';
-import Swiper from 'react-native-swiper';
+import { getSchedule, getSemesters } from '../service/NLUApiCaller';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const allTasks = {
-  '2023-11-27': [
-    {
-      id: '1',
-      title: 'An toàn và bảo mật hệ thống thông tin',
-      time: 'Tiết 4 -7(09:30)',
-      location: 'P3',
-      instructor: 'GV: P.D.Long',
-      status: 1
-    },
-    {
-      id: '2',
-      title: 'Data Mining',
-      time: 'Tiết 7 -10(12:15)',
-      location: 'P5',
-      instructor: 'GV: T.Q.Việt',
-      status: 1
-    },
-  ],
-  '2023-11-28': [
-    {
-      id: '1',
-      title: 'An toàn và bảo mật hệ thống thông tin',
-      time: 'Tiết 4 -7(09:30)',
-      location: 'P3',
-      instructor: 'GV: P.D.Long',
-      status: 1
-    },
-    {
-      id: '2',
-      title: 'Data Mining',
-      time: 'Tiết 7 -10(12:15)',
-      location: 'P5',
-      instructor: 'GV: T.Q.Việt',
-      status: 1
-    },
-    {
-      id: '3',
-      title: 'Data Mining',
-      time: 'Tiết 7 -10(12:15)',
-      location: 'P5',
-      instructor: 'GV: T.Q.Việt',
-      status: 1
-    },
-    {
-      id: '4',
-      title: 'Data Mining',
-      time: 'Tiết 7 -10(12:15)',
-      location: 'P5',
-      instructor: 'GV: T.Q.Việt',
-      status: 1
-    },
-  ],
-};
-const data = [
-  { label: 'Học kỳ 1 Năm học 2023-2024', value: '1' },
-  { label: 'Học kỳ 2 Năm học 2023-2024', value: '2' },
-];
 
 const Schedule = () => {
+  const [data, setData] = useState([]);
   const [selectedValue, setSelectedValue] = useState(null);
   const [selectedDate, setSelectedDate] = useState({
     [moment().format('YYYY-MM-DD')]: {
@@ -74,49 +19,53 @@ const Schedule = () => {
       selectedColor: 'blue',
     },
   });
-  const [currentMonth, setCurrentMonth] = useState(moment().format('YYYY-MM-DD'));
   const [isTitleEmpty, setIsTitleEmpty] = useState(true);
-  const handleSwipeLeft = () => {
-    const nextMonth = moment(currentMonth).add(1, 'months').format('YYYY-MM-DD');
-    setCurrentMonth(nextMonth);
-  };
-
-  const handleSwipeRight = () => {
-    const prevMonth = moment(currentMonth).subtract(1, 'months').format('YYYY-MM-DD');
-    setCurrentMonth(prevMonth);
-  };
   const [tasks, setTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [isModal2Visible, setModal2Visible] = useState(false);
   const [newTask, setNewTask] = useState({});
-  const [currentDay, setCurrentDay] = useState('');
+  const [currentDay, setCurrentDay] = useState(moment().format('YYYY-MM-DD'));
+  const [semesters, setSemesters] = useState([]);
 
-  const onDayPress = (day) => {
-    setSelectedDate({
-      [day.dateString]: {
-        selected: true,
-        selectedColor: 'blue',
-      },
-    });
-    setCurrentDay(day.dateString);
-    setTasks(allTasks[day.dateString] || []);
-  };
-  let lastId = 0;
-
-  const addTask = () => {
-    if (!allTasks[currentDay]) {
-      allTasks[currentDay] = [];
+ 
+  const addTask = async () => {
+    const updatedTasks = { ...tasks };
+    if (!updatedTasks[currentDay]) {
+      updatedTasks[currentDay] = [];
     }
-    lastId = allTasks[currentDay].length + 1;
+    let lastId = 0;
+    lastId = updatedTasks[currentDay].length + 1;
     const newTaskWithId = { ...newTask, id: lastId.toString(), status: 0 };
-    allTasks[currentDay].push(newTaskWithId);
-    setTasks(allTasks[currentDay]);
+    updatedTasks[currentDay].push(newTaskWithId);
+    setTasks(updatedTasks);
+  
+    try {
+      await AsyncStorage.setItem('@tasks', JSON.stringify(updatedTasks));
+    } catch (error) {
+      console.error('Error saving tasks:', error);
+    }
+  
     setNewTask({});
     setIsTitleEmpty(true);
     setShowModal(false);
   };
 
-  const deleteTask = (id) => {
+  useEffect(() => {
+    const retrieveTasks = async () => {
+      try {
+        const savedTasks = await AsyncStorage.getItem('@tasks');
+        if (savedTasks !== null) {
+          setTasks(JSON.parse(savedTasks));
+        }
+      } catch (error) {
+        console.error('Error retrieving tasks:', error);
+      }
+    };
+  
+    retrieveTasks();
+  }, []);
+  
+  const deleteTask = async (id) => {
     Alert.alert(
       "Xác nhận xóa",
       "Bạn có chắc chắn muốn xóa công việc này không?",
@@ -127,99 +76,353 @@ const Schedule = () => {
         },
         {
           text: "Xóa",
-          onPress: () => {
-            const index = allTasks[currentDay].findIndex(task => task.id === id);
+          onPress: async () => {
+            const updatedTasks = { ...tasks };
+            const index = updatedTasks[currentDay].findIndex(task => task.id === id);
             if (index !== -1) {
-              allTasks[currentDay].splice(index, 1);
+              updatedTasks[currentDay].splice(index, 1);
+              setTasks(updatedTasks);
+              try {
+                await AsyncStorage.setItem('@tasks', JSON.stringify(updatedTasks));
+              } catch (error) {
+                console.error('Error saving tasks:', error);
+              }
             }
-            setTasks([...allTasks[currentDay]]);
           }
         }
       ]
     );
   };
-  const editTask = (task) => {
-    const taskIndex = allTasks[currentDay].findIndex(t => t.id === task.id);
-
+  
+  const editTask = async (task) => {
+    const updatedTasks = { ...tasks };
+    const taskIndex = updatedTasks[currentDay].findIndex(t => t.id === task.id);
     if (taskIndex !== -1) {
-      allTasks[currentDay][taskIndex] = task;
+      updatedTasks[currentDay][taskIndex] = task;
+      setTasks(updatedTasks);
+      setIsTitleEmpty(true);
+      try {
+        await AsyncStorage.setItem('@tasks', JSON.stringify(updatedTasks));
+      } catch (error) {
+        console.error('Error saving tasks:', error);
+      }
     }
-    setTasks([...allTasks[currentDay]]);
   };
 
-  const generateMarkedDates = () => {
+  const generateMarkedDates = (tasks) => {
     const markedDates = {};
-
-    for (const date in allTasks) {
-      markedDates[date] = {
-        customStyles: {
-          container: {
-            borderWidth: 1,
-            borderColor: 'green',
-            backgroundColor: 'white',
-            borderRadius: 5,
+    const today = moment().format('YYYY-MM-DD');
+  
+    for (const date in tasks) {
+      if (tasks.hasOwnProperty(date) && tasks[date].length > 0) {
+        const isToday = date === today; 
+        
+  
+        markedDates[date] = {
+          customStyles: {
+            container: {
+              borderWidth: 1,
+              borderColor: isToday ? 'aqua' : 'green',
+              backgroundColor: 'white',
+              borderRadius: 5,
+            },
+            text: {
+              color: isToday ? 'aqua' : 'green', 
+              fontWeight: 'bold',
+            },
           },
-          text: {
-            color: 'green',
-            fontWeight: 'bold',
-          },
-        },
-      };
+        };
+      }
     }
-
+  
     return markedDates;
   };
+  
 
   const handleTitleChange = (text) => {
     setNewTask(prev => ({ ...prev, title: text }));
     setIsTitleEmpty(!text);
   };
+/* Dropdown */
+  useEffect(() => {
+    const fetchSemesters = async () => {
+      try {
+        const semesters = await getSemesters();
+        const formattedData = semesters.map(semester => ({
+          label: `${semester.name}`,
+          value: semester.id,
+        }));
+        setData(formattedData);
+      // if (formattedData.length > 0) {
+      //   setSelectedValue(formattedData[0].value);
+      // }
+      } catch (error) {
+        Toast.show({
+          type: 'error',
+          text1: 'Có lỗi xảy ra!',
+          text2: 'Không thể lấy dữ liệu từ trang ĐKMH',
+          visibilityTime: 2000,
+          autoHide: true,
+        });
+      }
+    };
+
+    fetchSemesters();
+  }, []);
+  /* calendar */
   useEffect(() => {
     setIsTitleEmpty(newTask.title ? newTask.title.trim() === "" : true);
   }, [newTask.title]);
+  
   useEffect(() => {
-    const today = moment().format('YYYY-MM-DD');
-    setCurrentDay(today);
-    setTasks(allTasks[today] || []);
+    const fetchTodaySchedule = async () => {
+      const scheduleData = await getSchedule(selectedValue);
+      if (scheduleData) {
+        const tasksByDate = { ...tasks };
+  
+        scheduleData.forEach(subject => {
+          const startDateString = moment(subject.startDate).format('20YY-MM-DD');
+          const endDateString = moment(subject.endDate).format('20YY-MM-DD');
+  
+          const startDate = moment(subject.startDate);
+          const endDate = moment(subject.endDate);
+          const dayOfWeek = startDate.day();
+          const currentWeek = startDate.week();
+          const endWeek = endDate.week();
+  
+          for (let week = currentWeek; week <= endWeek; week++) {
+            const markedDate = startDate.clone().week(week).day(dayOfWeek);
+            const formattedDate = markedDate.format('20YY-MM-DD');
+  
+            if (!tasksByDate[formattedDate]) {
+              tasksByDate[formattedDate] = [];
+            }
+  
+            tasksByDate[formattedDate].push({
+              id: subject.id,
+              title: subject.name,
+              time: `Tiết ${subject.lessonStart} - ${subject.lessonStart + subject.numOfLesson - 1}`,
+              location: subject.classroom,
+              instructor: `GV: ${subject.teacher}`,
+              status: 1
+            });
+          }
+        });
+  
+        setTasks(tasksByDate);
+      } else {
+        // setTasks({});
+      }
+    };
+  
+    fetchTodaySchedule();
+  }, [selectedValue]);
+  useEffect(() => {
+    const fetchSemesters = async () => {
+      const semestersData = await getSemesters();
+      if (semestersData) {
+        setSemesters(semestersData);
+      }
+    };
+  
+    fetchSemesters();
   }, []);
-
-  const markedDates = generateMarkedDates();
-
+  
+  useEffect(() => {
+    const selectedSemester = semesters.find(semester => semester.id === selectedValue);
+    if (selectedSemester && selectedSemester.startDate) {
+      const formattedStartDate = moment(selectedSemester.startDate).format('20YY-MM-DD');
+      setSelectedDate({
+        [formattedStartDate]: {
+          selected: true,
+          selectedColor: 'blue',
+        },
+      });
+      setCurrentDay(formattedStartDate);
+    }
+  }, [selectedValue, semesters]);
+  const uniqueTasks = (tasks) => {
+    const seen = new Set();
+    return tasks.filter(task => {
+      const key = `${task.id}-${task.time}`;
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  };
+  const markedDates = generateMarkedDates(tasks);
+  const totalTasksForCurrentDay = uniqueTasks(tasks[currentDay] ?? []).length;
+  
+  const reloadPage = async () => {
+    try {
+      const today = moment().format('YYYY-MM-DD');
+      setSelectedDate({
+        [today]: {
+          selected: true,
+          selectedColor: 'blue',
+        },
+      });
+      setCurrentDay(today);
+      const semestersData = await getSemesters();
+      if (semestersData) {
+        const formattedData = semestersData.map(semester => ({
+          label: `${semester.name}`,
+          value: semester.id,
+        }));
+        setData(formattedData);
+        if (formattedData.length > 0) {
+          setSelectedValue(formattedData[0].value);
+        }
+      }
+  
+      const scheduleData = await getSchedule(selectedValue);
+      if (scheduleData) {
+        const tasksByDate = {};
+        scheduleData.forEach(subject => {
+          const startDateString = moment(subject.startDate).format('20YY-MM-DD');
+          const endDateString = moment(subject.endDate).format('20YY-MM-DD');
+        
+          const startDate = moment(subject.startDate);
+          const endDate = moment(subject.endDate);
+          const dayOfWeek = startDate.day();
+          const currentWeek = startDate.week();
+          const endWeek = endDate.week();
+        
+          for (let week = currentWeek; week <= endWeek; week++) {
+            const markedDate = startDate.clone().week(week).day(dayOfWeek);
+            const formattedDate = markedDate.format('YYYY-MM-DD');
+        
+            if (!tasksByDate[formattedDate]) {
+              tasksByDate[formattedDate] = [];
+            }
+        
+            tasksByDate[formattedDate].push({
+              id: subject.id,
+              title: subject.name,
+              time: `Tiết ${subject.lessonStart} - ${subject.lessonStart + subject.numOfLesson - 1}`,
+              location: subject.classroom,
+              instructor: `GV: ${subject.teacher}`,
+              status: 1
+            });
+          }
+        });
+        setTasks(tasksByDate);
+      } else {
+        setTasks({});
+      }
+    } catch (error) {
+      console.error('Error reloading page:', error);
+    }
+  };
+ 
+  
+  const onDayPress = async (day) => {
+    setSelectedDate({
+      [day.dateString]: {
+        selected: true,
+        selectedColor: 'blue',
+      },
+    });
+    setCurrentDay(day.dateString);
+  
+    try {
+      const scheduleData = await getSchedule(selectedValue);
+      const tasksByDate = { ...tasks }; 
+  
+      if (scheduleData) {
+        scheduleData.forEach(subject => {
+          const startDateString = moment(subject.startDate).format('20YY-MM-DD');
+          const endDateString = moment(subject.endDate).format('20YY-MM-DD');
+  
+          const startDate = moment(subject.startDate);
+          const endDate = moment(subject.endDate);
+          const dayOfWeek = startDate.day();
+          const currentWeek = startDate.week();
+          const endWeek = endDate.week();
+  
+          for (let week = currentWeek; week <= endWeek; week++) {
+            const markedDate = startDate.clone().week(week).day(dayOfWeek);
+            const formattedDate = markedDate.format('YYYY-MM-DD');
+  
+            if (!tasksByDate[formattedDate]) {
+              tasksByDate[formattedDate] = [];
+            }
+  
+            tasksByDate[formattedDate].push({
+              id: subject.id,
+              title: subject.name,
+              time: `Tiết ${subject.lessonStart} - ${subject.lessonStart + subject.numOfLesson - 1}`,
+              location: subject.classroom,
+              instructor: `GV: ${subject.teacher}`,
+              status: 1
+            });
+          }
+        });
+      }
+  
+      setTasks(tasksByDate);
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Có lỗi xảy ra!',
+        text2: 'Không thể lấy dữ liệu từ trang ĐKMH',
+        visibilityTime: 2000,
+        autoHide: true,
+      });
+     
+    }
+  };
+  
   return (
     <View style={{
       paddingHorizontal: 10,
     }}>
-      <Dropdown
-        style={{
-          width: '100%',
-          height: 40,
-          borderWidth: 1,
-          borderColor: 'black',
-          borderRadius: 10,
-          paddingHorizontal: 10,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        data={data}
-        labelField="label"
-        valueField="value"
-        placeholder="Chọn học kỳ"
-        value={selectedValue}
-        onChange={(item) => setSelectedValue(item.value)}
-      />
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+  <Dropdown
+    style={{
+      width: '90%',
+      height: 40,
+      borderWidth: 1,
+      borderColor: 'black',
+      borderRadius: 10,
+      paddingHorizontal: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+    data={data}
+    labelField="label"
+    valueField="value"
+    placeholder="Chọn học kỳ"
+    value={selectedValue}
+    onChange={(item) => setSelectedValue(item.value)}
+  />
+  <TouchableOpacity
+    style={{
+      width: 40,
+      height: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+    onPress={reloadPage}
+  >
+    <Icon name="ios-refresh" size={24} color="black" />
+  </TouchableOpacity>
+</View>
 
       <Calendar
+        key={currentDay}
         style={{
           backgroundColor: 'white',
           marginTop: 10,
           borderRadius: 10,
         }}
+
         markingType='custom'
-        markedDates={{ ...markedDates, ...selectedDate }}
-        current={moment().format('YYYY-MM-DD')}
+        markedDates={{ ...markedDates, ...selectedDate}}
+        current={currentDay}
         onDayPress={onDayPress}
-        onSwipeNext={handleSwipeLeft}
-        onSwipePrev={handleSwipeRight}
         hideExtraDays
         theme={{
           'stylesheet.calendar.main': {
@@ -236,7 +439,7 @@ const Schedule = () => {
         }}
       />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 10, alignItems: 'center' }}>
-        <Text style={{ marginRight: 5, marginTop: 5 }}>Tổng số: <Text style={{ color: 'blue', fontWeight: 'bold' }}>{tasks.length}</Text></Text>
+        <Text style={{ marginRight: 5, marginTop: 5 }}>Tổng số: <Text style={{ color: 'blue', fontWeight: 'bold' }}>{totalTasksForCurrentDay}</Text></Text>
         <View style={{ marginTop: 5, width: 200, height: 30, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
           <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: 'green', marginRight: 5 }} />
           <Text>Ngày học</Text>
@@ -285,9 +488,9 @@ const Schedule = () => {
         </View>
       </Modal>
       <FlatList
-        data={tasks}
-        keyExtractor={item => item.id.toString()}
-        style={{ height: 66 * 3 + 50, }}
+        data={uniqueTasks(tasks[currentDay] ?? [])}
+        keyExtractor={item => `${item.id}-${item.time}`}
+        style={{ height: 66 * 3 + 50 }}
         renderItem={({ item }) => (
           <View style={{
             marginTop: 10,
@@ -370,5 +573,6 @@ const Schedule = () => {
 
   );
 };
+
 
 export default Schedule;
