@@ -50,6 +50,33 @@ export async function LoginNLU(username, password) {
     return null;
 }
 
+//get infomation of a student
+//return an info json object or null if error
+//json object will be logged in console when this function is called
+export async function getInfoStudent() {
+    const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locsinhvieninfo";
+    const token = await AsyncStorage.getItem('token');
+    const params = "";
+
+    const response = await fetch(urlString, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+        },
+        body: params,
+    });
+
+    if (response.ok) {
+        const res = [];
+        const responseData = await response.json();
+        const data = responseData.data;
+        console.log(data)
+        return data;
+    }
+    return null;
+}
+
 //Get list of semester
 //return a list of semester or null if error
 export async function getSemesters() {
@@ -217,7 +244,9 @@ export async function getScoreBoard() {
                 const subjectName = item.ten_mon;
                 const grade = item.diem_tk;
                 const charGrade = item.diem_tk_chu;
-                const grades = new Grade(idSubject, subjectName, grade, charGrade);
+                const credit = item.numCredit;
+                const grade4 = item.diem_tk_so;
+                const grades = new Grade(idSubject, subjectName, grade, charGrade, credit, grade4);
                 scores.push(grades);
             }
 
@@ -367,8 +396,8 @@ export async function registerSubject(idSubjectClass) {
         if (!isSuccess) return responseData.data.thong_bao_loi;
         const enableDelete = responseData.data.ket_qua_dang_ky.enable_xoa;
         if (enableDelete)
-            return true;
-        else return false;
+            return true; //complete
+        else return false; //fail
     }
     return null;
 }
