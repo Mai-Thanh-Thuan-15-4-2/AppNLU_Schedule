@@ -9,7 +9,7 @@ import Notification from '../model/Notification';
 import SubjectClass from '../model/SubjectClass';
 import ResultRegister from '../model/ResultRegister';
 
-export async function LoginDefault(){
+export async function LoginDefault() {
     const username = await AsyncStorage.getItem('username');
     const password = await AsyncStorage.getItem('password');
     const student = await LoginNLU(username, password);
@@ -457,6 +457,87 @@ export async function getResultRegister() {
     }
     return null;
 }
+
+
+export async function getEducationFee() {
+    const urlString = "https://dkmh.hcmuaf.edu.vn/api/rms/w-locdstonghophocphisv";
+    const token = await AsyncStorage.getItem('token');
+    const params = '';
+
+    const response = await fetch(urlString, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+        },
+        body: params,
+    });
+
+    if (response.ok) {
+        const res = [];
+        const responseData = await response.json();
+        const code = responseData.code;
+
+        if (code == 200) {
+            const listResult = responseData.data.ds_hoc_phi_hoc_ky;
+            for (let i = 0; i < listResult.length; i++) {
+                const item = listResult[i];
+                const semesterName = item.ten_hoc_ky;
+                const fee = item.hoc_phi;
+                const reduce = item.mien_giam;
+                const mustGet = item.phai_thu;
+                const got = item.da_thu;
+                const dept = item.con_no;
+
+                const result = { semesterName: semesterName, fee: fee, reduce: reduce, mustGet: mustGet, got: got, dept: dept };
+                res.push(result);
+            }
+            return res;
+        }
+
+    }
+    return null;
+}
+
+
+export async function getInfoStudent() {
+    const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locsinhvieninfo";
+    const token = await AsyncStorage.getItem('token');
+    const params = '';
+
+    const response = await fetch(urlString, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+        },
+        body: params,
+    });
+
+    if (response.ok) {
+        const responseData = await response.json();
+        const code = responseData.code;
+
+        if (code == 200) {
+            const data = responseData.data;
+            const id = data.ma_sv;
+            const name = data.ten_day_du;
+            const classes = data.lop;
+            const majors = data.nganh;
+            const department = data.khoa;
+            const school = data.ten_truong;
+            const birthday = data.ngay_sinh;
+            const year = data.nien_khoa;
+            const country = data.noi_sinh;
+
+            return { id: id, name: name, classes: classes, majors: majors, department: department, school: school, birthday: birthday, year: year, country: country };
+
+        }
+
+    }
+    return null;
+}
+
 
 function StringToDate(dateString) {
     let parts = dateString.split("/");
