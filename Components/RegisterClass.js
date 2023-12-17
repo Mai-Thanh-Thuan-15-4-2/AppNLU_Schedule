@@ -131,6 +131,7 @@ export default function RegisterClass() {
 
     const doSearch = (text) => {
         const data = subjectClassAll.filter(item => item.idSubject.indexOf(text) !== -1 || item.name.toLowerCase().indexOf(text.toLowerCase()) !== -1);
+        console.log(data)
         setSubjectClasses(data);
     }
 

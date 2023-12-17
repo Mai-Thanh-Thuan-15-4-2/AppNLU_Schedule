@@ -53,29 +53,29 @@ export async function LoginNLU(username, password) {
 //get infomation of a student
 //return an info json object or null if error
 //json object will be logged in console when this function is called
-export async function getInfoStudent() {
-    const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locsinhvieninfo";
-    const token = await AsyncStorage.getItem('token');
-    const params = "";
+// export async function getInfoStudent() {
+//     const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locsinhvieninfo";
+//     const token = await AsyncStorage.getItem('token');
+//     const params = "";
 
-    const response = await fetch(urlString, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token,
-        },
-        body: params,
-    });
+//     const response = await fetch(urlString, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//             "Authorization": "Bearer " + token,
+//         },
+//         body: params,
+//     });
 
-    if (response.ok) {
-        const res = [];
-        const responseData = await response.json();
-        const data = responseData.data;
-        console.log(data)
-        return data;
-    }
-    return null;
-}
+//     if (response.ok) {
+//         const res = [];
+//         const responseData = await response.json();
+//         const data = responseData.data;
+//         console.log(data)
+//         return data;
+//     }
+//     return null;
+// }
 
 //Get list of semester
 //return a list of semester or null if error

@@ -90,7 +90,7 @@ const Score = () => {
         )}
       />
       {isLoading ? (
-        <View style={styles.loadingContainer}>
+        <View style={loadPage.loadingContainer}>
           <ActivityIndicator size="large" color="#2bc250" />
         </View>) : (<></>)
       }
@@ -167,19 +167,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.success,
   },
-  loadingContainer: {
-    position: 'absolute',
-    zIndex: 1,
-    backgroundColor: '#bec4c2',
-    top: '50%',
-    left: '50%',
-    transform: [{ translateX: -60 }, { translateY: -75 }],
-    width: 150,
-    height: 150,
-    justifyContent: 'center',
-    borderRadius: 10,
-    opacity: 0.8,
-  },
+
 });
 
 export default Score;

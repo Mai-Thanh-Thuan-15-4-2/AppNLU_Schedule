@@ -1,67 +1,98 @@
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { ListItem } from 'react-native-elements';
+import { getEducationFee } from '../service/NLUApiCaller';
+import { loadPage } from '../BaseStyle/Style';
 
 const EducationFees = () => {
-  const feesData = [
-    {
-      semester: 'Học kì 1 năm 2023-2024',
-      tuitionFee: 1000000,
-      discount: 200000,
-      dueFee: 800000,
-      paidFee: 600000,
-      remainingBalance: 0,
-    },
-    {
-      semester: 'Học kì 1 năm 2023-2024',
-      tuitionFee: 1000000,
-      discount: 200000,
-      dueFee: 800000,
-      paidFee: 600000,
-      remainingBalance: 0,
-    },
-    // Thêm các mục khác tương tự ở đây
-  ];
+
+  const [feesData, setfeesData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchfeesData = async () => {
+
+      setIsLoading(true)
+      const data = await getEducationFee();
+      if (data.length > 0) {
+        setfeesData(data);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Có lỗi xảy ra!',
+          text2: 'Không thể lấy dữ liệu từ trang ĐKMH',
+          visibilityTime: 2000,
+          autoHide: true,
+        });
+      }
+      setIsLoading(false)
+
+    };
+
+    fetchfeesData();
+ 
+  }, []);
+
+// Tính tổng HP
+  const getTotalTuitionFee = () => {
+    return feesData.reduce((total, item) => total + parseFloat(item.fee), 0);
+  };
+
+  const createTotalItem = () => {
+    const totalTuitionFee = getTotalTuitionFee();
+    return {
+      semesterName: 'Tổng cộng',
+      fee: totalTuitionFee,
+      reduce: 0,
+      mustGet: 0,
+      got: 0,
+      dept: 0,
+    };
+  };
 
   const renderItem = ({ item, index }) => (
     <ListItem containerStyle={styles.listItem}>
       <ListItem.Content>
         <View style={styles.semesterContainer}>
-          <Text style={styles.semesterText}>{item.semester}</Text>
+          <Text style={styles.semesterText}>{item.semesterName}</Text>
         </View>
         <View style={styles.feeContainer}>
-          <Text style={[styles.feeText, styles.leftBorder, styles.bottomBorder, styles.topBorder]}>HP chưa giảm: {item.tuitionFee}</Text>
-          <Text style={[styles.feeText, styles.rightBorder, styles.bottomBorder, styles.topBorder]}>Miễn giảm: {item.discount}</Text>
-          <Text style={[styles.feeText, styles.leftBorder, styles.bottomBorder]}>HP phải thu: {item.dueFee}</Text>
-          <Text style={[styles.feeText, styles.rightBorder, styles.bottomBorder]}>HP đã thu: {item.paidFee}</Text>
+          <Text style={[styles.feeText, styles.leftBorder, styles.bottomBorder, styles.topBorder]}>HP: {formatCurrency(item.fee)}</Text>
+          <Text style={[styles.feeText, styles.rightBorder, styles.bottomBorder, styles.topBorder]}>Miễn giảm: {formatCurrency(item.reduce)}</Text>
+          <Text style={[styles.feeText, styles.leftBorder, styles.bottomBorder]}>HP phải thu: {formatCurrency(item.mustGet)}</Text>
+          <Text style={[styles.feeText, styles.rightBorder, styles.bottomBorder]}>HP đã thu: {formatCurrency(item.got)}</Text>
           <Text style={[styles.feeText, styles.remainingBalanceText]}>
-            Còn nợ: {item.remainingBalance}
+            Còn nợ: {formatCurrency(item.dept)}
           </Text>
         </View>
       </ListItem.Content>
     </ListItem>
+
   );
 
-  // Tính tổng HP
-  const totalTuitionFee = feesData.reduce((total, item) => total + item.tuitionFee, 0);
 
-  // Thêm item tổng cộng
-  feesData.push({
-    semester: 'Tổng cộng',
-    tuitionFee: totalTuitionFee,
-    discount: 0,
-    dueFee: 0,
-    paidFee: 0,
-    remainingBalance: 0,
-  });
+  const formatCurrency = (value) => {
+    value = parseFloat(value)
+    if (typeof value === 'number' && !isNaN(value)) {
+      return value.toLocaleString('vi-VN'); // Đổi ngôn ngữ nếu cần
+    } else {
+      return 'Invalid value';
+    }
+  };
+  
 
   return (
     <View>
       <FlatList
-        data={feesData}
+        data={[...feesData, createTotalItem()]}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
       />
+      {isLoading ? (
+        <View style={loadPage.loadingContainer}>
+          <ActivityIndicator size="large" color="#2bc250" />
+        </View>) : (<></>)
+      }
     </View>
   );
 };
@@ -110,6 +141,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'red', // Màu cho "Còn nợ"
   },
+
 });
 
 export default EducationFees;
