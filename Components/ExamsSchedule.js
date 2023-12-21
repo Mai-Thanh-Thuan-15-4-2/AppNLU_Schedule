@@ -3,11 +3,9 @@ import { View, Text, StyleSheet, Picker, ActivityIndicator } from 'react-native'
 import { Dropdown } from 'react-native-element-dropdown';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import Toast from 'react-native-toast-message';
 
 import { getExams, getSemesters } from '../service/NLUApiCaller';
-import { loadPage } from '../BaseStyle/Style';
-import { colors } from 'react-native-elements';
+import { loadPage, colors } from '../BaseStyle/Style';
 
 const ExamsSchedule = () => {
     const [listSemester, setlistSemester] = useState([]);
@@ -18,7 +16,7 @@ const ExamsSchedule = () => {
 
     const handleSemesterChange = async (id) => {
         setSelectedIdSemester(id);
-        // setIsLoading(true);
+        setIsLoading(true);
     
         try {
           const data = await getExams(id);
@@ -27,7 +25,7 @@ const ExamsSchedule = () => {
           console.error(error);
          
         }
-        
+        setIsLoading(false)
       };
     function DateToString(date) {
         // Kiểm tra nếu đối tượng date không phải là đối tượng Date

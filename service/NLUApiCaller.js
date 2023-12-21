@@ -522,6 +522,7 @@ export async function getInfoStudent() {
 
     if (response.ok) {
         const responseData = await response.json();
+        console.log(responseData);
         const code = responseData.code;
 
         if (code == 200) {
