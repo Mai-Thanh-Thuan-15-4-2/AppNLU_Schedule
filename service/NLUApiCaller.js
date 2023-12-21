@@ -189,6 +189,8 @@ export async function getExams(idSemester) {
     if (response.ok) {
         const res = [];
         const responseData = await response.json();
+        console.log(responseData)
+        if(responseData.data.total_items === 0) return [];
         const listExam = responseData.data.ds_lich_thi;
         for (let i = 0; i < listExam.length; i++) {
             const item = listExam[i];
@@ -204,6 +206,7 @@ export async function getExams(idSemester) {
             const exam = new Exam(numOrder, id, name, testDay, examRoom, lessonStart, numOfLesson, examForm);
             res.push(exam);
         }
+        console.log(res);
         return res;
     }
     return null;

@@ -17,7 +17,6 @@
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/stack": "^6.3.20",
-    "appnlu_schedule": "file:appnlu_schedule-1.0.0.tgz",
     "expo": "~49.0.15",
     "expo-location": "~16.1.0",
     "expo-splash-screen": "~0.20.5",
