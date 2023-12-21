@@ -117,46 +117,59 @@ export async function getSemesters() {
 export async function getSchedule(idSemester) {
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/sch/w-locdstkbhockytheodoituong";
     const token = await AsyncStorage.getItem('token');
-    const params = "{hoc_ky: " + idSemester + ", loai_doi_tuong: 1, id_du_lieu: null}";
-
-    const response = await fetch(urlString, {
+    const params = JSON.stringify({
+      hoc_ky: idSemester,
+      loai_doi_tuong: 1,
+      id_du_lieu: null
+    });
+  
+    try {
+      const response = await fetch(urlString, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token,
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
         },
         body: params,
-    });
-
-    if (response.ok) {
+      });
+  
+      if (response.ok) {
         const res = [];
         const responseData = await response.json();
-        const listSubject = responseData.data.ds_nhom_to;
-        for (let i = 0; i < listSubject.length; i++) {
-            const item = listSubject[i];
-            const id = item.ma_mon;
-            const name = item.ten_mon;
-            const group = item.nhom_to;
-            const classes = item.lop;
-            const classroom = item.phong;
-            const teacher = item.gv;
-            const numOfCredit = item.so_tc;
-            const day = item.thu;
-            const lessonStart = item.tbd;
-            const numOfLesson = item.so_tiet;
-            const rangeTime = item.tkb;
-
-            const startDate = StringToDate(rangeTime.substring(0, 8));
-            const endDate = StringToDate(rangeTime.substring(13, rangeTime.length));
-
-            const subject = new Subject(id, name, group, classes, classroom, teacher, numOfCredit, day, lessonStart, numOfLesson, startDate, endDate);
-            res.push(subject);
+        if (responseData && responseData.data && responseData.data.ds_nhom_to) {
+          const listSubject = responseData.data.ds_nhom_to;
+           for (let i = 0; i < listSubject.length; i++) {
+              const item = listSubject[i];
+              const id = item.ma_mon;
+              const name = item.ten_mon;
+              const group = item.nhom_to;
+              const classes = item.lop;
+              const classroom = item.phong;
+              const teacher = item.gv;
+              const numOfCredit = item.so_tc;
+              const day = item.thu;
+              const lessonStart = item.tbd;
+              const numOfLesson = item.so_tiet;
+              const rangeTime = item.tkb;
+  
+              const startDate = StringToDate(rangeTime.substring(0, 8));
+              const endDate = StringToDate(rangeTime.substring(13, rangeTime.length));
+  
+              const subject = new Subject(id, name, group, classes, classroom, teacher, numOfCredit, day, lessonStart, numOfLesson, startDate, endDate);
+              res.push(subject);
+          }
+          return res;
+      
+        } else {
+          return null;
         }
-        return res;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      return null;
     }
-    return null;
-}
-
+  }
 //Get list of test day in a semester
 //return a list of test day in a semester or null if error
 export async function getExams(idSemester) {
@@ -531,6 +544,10 @@ function StringToDate(dateString) {
     let formattedDate = parts[2] + "-" + parts[1] + "-" + parts[0];
     return new Date(formattedDate);
 }
+function ChangeDate(dateString) {
+    const correctedDateString = dateString.replace(/^00/, '20');
+    return new Date(correctedDateString);
+  }
 
 
 

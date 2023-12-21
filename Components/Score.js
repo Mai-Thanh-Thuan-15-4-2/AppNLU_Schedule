@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Toast from 'react-native-toast-message';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { colors } from '../BaseStyle/Style';
+import { colors, loadPage } from '../BaseStyle/Style';
 import { getScoreBoard } from '../service/NLUApiCaller';
+
 
 
 
