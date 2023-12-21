@@ -223,7 +223,7 @@ const Schedule = () => {
     const markedDates = {};
     const today = moment().format('YYYY-MM-DD');
 
-    for (const date in tasks) {
+    for (e in tasks) {
       if (tasks.hasOwnProperty(date) && tasks[date].length > 0) {
         const isToday = date === today;
 
