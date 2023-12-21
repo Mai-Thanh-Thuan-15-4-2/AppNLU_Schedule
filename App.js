@@ -9,6 +9,7 @@ import Profile from './Components/Profile';
 import About from './Components/About';
 import RegisterClass from './Components/RegisterClass';
 import Score from './Components/Score';
+import Map from './Components/Map';
 const App = () => {
   const Stack = createStackNavigator();
   return (
@@ -20,6 +21,7 @@ const App = () => {
           <Stack.Screen name="RegisterClass" component={RegisterClass} />
           <Stack.Screen name="About" component={About} options={{ gestureEnabled: true }}/>
           <Stack.Screen name="Score" component={Score} options={{ gestureEnabled: true }}/>
+          <Stack.Screen name="Map" component={Map} options={{ gestureEnabled: true }}/>
           <Stack.Screen name="ReportBug" component={ReportBug} />
           <Stack.Screen name="MenuPane" component={MenuPane} options={{ gestureEnabled: false }} />
         </Stack.Navigator>
