@@ -23,6 +23,7 @@ class Notification extends Component {
       });
       this.setState({ notificationList: updatedNotifications });
     }
+    
   };
 
   isNewNotification = (uploadDate) => {
@@ -34,11 +35,14 @@ class Notification extends Component {
   handlePress = (id) => {
     const { navigation } = this.props;
     navigation.navigate('Thông Báo Chi Tiết', { idNotification: id });
+    
+   
   };
 
   
 
 renderItem = ({ item }) => (
+  
   <TouchableOpacity
     style={styles.notification}
     onPress={() => this.handlePress(item.id)}
@@ -50,6 +54,7 @@ renderItem = ({ item }) => (
     <View style={styles.uploadTime}>
       <Text style={{fontWeight: 'bold'}}>Ngày đăng: </Text>
       <Text style={styles.dateText}>{this.formatDate(item.uploadDate)}</Text>
+     
     </View>
     <Text>{item.content}</Text>
   </TouchableOpacity>
@@ -68,8 +73,11 @@ renderItem = ({ item }) => (
         data={notificationList}
         renderItem={this.renderItem}
         keyExtractor={item => item.id}
+        
       />
+      
     );
+    
   }
 }
 

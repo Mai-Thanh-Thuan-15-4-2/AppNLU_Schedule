@@ -53,29 +53,29 @@ export async function LoginNLU(username, password) {
 //get infomation of a student
 //return an info json object or null if error
 //json object will be logged in console when this function is called
-export async function getInfoStudent() {
-    const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locsinhvieninfo";
-    const token = await AsyncStorage.getItem('token');
-    const params = "";
+// export async function getInfoStudent() {
+//     const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locsinhvieninfo";
+//     const token = await AsyncStorage.getItem('token');
+//     const params = "";
 
-    const response = await fetch(urlString, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token,
-        },
-        body: params,
-    });
+//     const response = await fetch(urlString, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//             "Authorization": "Bearer " + token,
+//         },
+//         body: params,
+//     });
 
-    if (response.ok) {
-        const res = [];
-        const responseData = await response.json();
-        const data = responseData.data;
-        console.log(data)
-        return data;
-    }
-    return null;
-}
+//     if (response.ok) {
+//         const res = [];
+//         const responseData = await response.json();
+//         const data = responseData.data;
+//         console.log(data)
+//         return data;
+//     }
+//     return null;
+// }
 
 //Get list of semester
 //return a list of semester or null if error
@@ -257,7 +257,7 @@ export async function getScoreBoard() {
                 const subjectName = item.ten_mon;
                 const grade = item.diem_tk;
                 const charGrade = item.diem_tk_chu;
-                const credit = item.numCredit;
+                const credit = item.so_tin_chi;
                 const grade4 = item.diem_tk_so;
                 const grades = new Grade(idSubject, subjectName, grade, charGrade, credit, grade4);
                 scores.push(grades);
@@ -327,8 +327,11 @@ export async function getNotification(idNotification) {
         const id = item.id;
         const title = item.tieu_de;
         const content = item.noi_dung;
-        const uploadDate = new Date(item.ngay_dang_tin);
-        const modifyDate = new Date(item.ngay_hieu_chinh);
+        const uploadDate = item.ngay_dang_tin;
+        
+        const modifyDate = item.ngay_hieu_chinh;
+        // const uploadDate = new Date(item.ngay_dang_tin);
+        // const modifyDate = new Date(item.ngay_hieu_chinh);
 
         return new Notification(id, title, content, uploadDate, modifyDate);
     }
