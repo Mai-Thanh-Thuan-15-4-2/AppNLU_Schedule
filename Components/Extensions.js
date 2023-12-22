@@ -7,11 +7,11 @@ import { colors } from '../BaseStyle/Style';
 
 const items = [
   { title: 'ĐKMH', icon: 'book', screen: 'RegisterClass' },
-  { title: 'Xem điểm', icon: 'bar-chart', screen: 'Score' }, // đổi link screen ở đây
+  { title: 'Xem điểm', icon: 'bar-chart', screen: 'Xem điểm' }, // đổi link screen ở đây
   { title: 'Lịch thi', icon: 'calendar', screen: 'LichThiScreen' },
   { title: 'Chat GPT', icon: 'chatbubble-outline', screen: 'ChatGPTScreen' },
   { title: 'Chương trình đào tạo', icon: 'book', screen: 'ChuongTrinhDaoTaoScreen' },
-  { title: 'Học phí', icon: 'cash-outline', screen: 'HocPhiScreen' },
+  { title: 'Học phí', icon: 'cash-outline', screen: 'Học Phí' },
 ];
 
 const GridItem = ({ title, icon, screen }) => {

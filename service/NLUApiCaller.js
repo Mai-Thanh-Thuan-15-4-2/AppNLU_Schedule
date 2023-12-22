@@ -9,7 +9,7 @@ import Notification from '../model/Notification';
 import SubjectClass from '../model/SubjectClass';
 import ResultRegister from '../model/ResultRegister';
 
-export async function LoginDefault(){
+export async function LoginDefault() {
     const username = await AsyncStorage.getItem('username');
     const password = await AsyncStorage.getItem('password');
     const student = await LoginNLU(username, password);
@@ -49,6 +49,33 @@ export async function LoginNLU(username, password) {
     }
     return null;
 }
+
+//get infomation of a student
+//return an info json object or null if error
+//json object will be logged in console when this function is called
+// export async function getInfoStudent() {
+//     const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locsinhvieninfo";
+//     const token = await AsyncStorage.getItem('token');
+//     const params = "";
+
+//     const response = await fetch(urlString, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//             "Authorization": "Bearer " + token,
+//         },
+//         body: params,
+//     });
+
+//     if (response.ok) {
+//         const res = [];
+//         const responseData = await response.json();
+//         const data = responseData.data;
+//         console.log(data)
+//         return data;
+//     }
+//     return null;
+// }
 
 //Get list of semester
 //return a list of semester or null if error
@@ -230,7 +257,9 @@ export async function getScoreBoard() {
                 const subjectName = item.ten_mon;
                 const grade = item.diem_tk;
                 const charGrade = item.diem_tk_chu;
-                const grades = new Grade(idSubject, subjectName, grade, charGrade);
+                const credit = item.so_tin_chi;
+                const grade4 = item.diem_tk_so;
+                const grades = new Grade(idSubject, subjectName, grade, charGrade, credit, grade4);
                 scores.push(grades);
             }
 
@@ -298,8 +327,11 @@ export async function getNotification(idNotification) {
         const id = item.id;
         const title = item.tieu_de;
         const content = item.noi_dung;
-        const uploadDate = new Date(item.ngay_dang_tin);
-        const modifyDate = new Date(item.ngay_hieu_chinh);
+        const uploadDate = item.ngay_dang_tin;
+        
+        const modifyDate = item.ngay_hieu_chinh;
+        // const uploadDate = new Date(item.ngay_dang_tin);
+        // const modifyDate = new Date(item.ngay_hieu_chinh);
 
         return new Notification(id, title, content, uploadDate, modifyDate);
     }
@@ -380,8 +412,8 @@ export async function registerSubject(idSubjectClass) {
         if (!isSuccess) return responseData.data.thong_bao_loi;
         const enableDelete = responseData.data.ket_qua_dang_ky.enable_xoa;
         if (enableDelete)
-            return true;
-        else return false;
+            return true; //complete
+        else return false; //fail
     }
     return null;
 }
@@ -428,6 +460,87 @@ export async function getResultRegister() {
     }
     return null;
 }
+
+
+export async function getEducationFee() {
+    const urlString = "https://dkmh.hcmuaf.edu.vn/api/rms/w-locdstonghophocphisv";
+    const token = await AsyncStorage.getItem('token');
+    const params = '';
+
+    const response = await fetch(urlString, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+        },
+        body: params,
+    });
+
+    if (response.ok) {
+        const res = [];
+        const responseData = await response.json();
+        const code = responseData.code;
+
+        if (code == 200) {
+            const listResult = responseData.data.ds_hoc_phi_hoc_ky;
+            for (let i = 0; i < listResult.length; i++) {
+                const item = listResult[i];
+                const semesterName = item.ten_hoc_ky;
+                const fee = item.hoc_phi;
+                const reduce = item.mien_giam;
+                const mustGet = item.phai_thu;
+                const got = item.da_thu;
+                const dept = item.con_no;
+
+                const result = { semesterName: semesterName, fee: fee, reduce: reduce, mustGet: mustGet, got: got, dept: dept };
+                res.push(result);
+            }
+            return res;
+        }
+
+    }
+    return null;
+}
+
+
+export async function getInfoStudent() {
+    const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locsinhvieninfo";
+    const token = await AsyncStorage.getItem('token');
+    const params = '';
+
+    const response = await fetch(urlString, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+        },
+        body: params,
+    });
+
+    if (response.ok) {
+        const responseData = await response.json();
+        const code = responseData.code;
+
+        if (code == 200) {
+            const data = responseData.data;
+            const id = data.ma_sv;
+            const name = data.ten_day_du;
+            const classes = data.lop;
+            const majors = data.nganh;
+            const department = data.khoa;
+            const school = data.ten_truong;
+            const birthday = data.ngay_sinh;
+            const year = data.nien_khoa;
+            const country = data.noi_sinh;
+
+            return { id: id, name: name, classes: classes, majors: majors, department: department, school: school, birthday: birthday, year: year, country: country };
+
+        }
+
+    }
+    return null;
+}
+
 
 function StringToDate(dateString) {
     let parts = dateString.split("/");

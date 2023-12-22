@@ -3,10 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { colors } from '../BaseStyle/Style';
 
 const Profile = ({ navigation }) => {
-    const handleComeBack = () => {
-        navigation.goBack();
-      };
-    
+   
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Thông Tin Tài Khoản</Text>
@@ -57,9 +54,7 @@ const Profile = ({ navigation }) => {
           <Text style={styles.value}>Đồng Nai</Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleComeBack}>
-        <Text>Back</Text>
-      </TouchableOpacity>
+   
     </View>
   );
 };

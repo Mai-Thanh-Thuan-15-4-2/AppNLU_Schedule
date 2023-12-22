@@ -18,7 +18,7 @@ const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState({
     [moment().format('YYYY-MM-DD')]: {
       selected: true,
-      selectedColor: 'blue',
+      selectedColor: '#0D1282',
     },
   });
   const [isTitleEmpty, setIsTitleEmpty] = useState(true);
@@ -345,7 +345,7 @@ const Schedule = () => {
       setSelectedDate({
         [formattedStartDate]: {
           selected: true,
-          selectedColor: 'blue',
+          selectedColor: '#0D1282',
         },
       });
       setCurrentDay(formattedStartDate);
@@ -427,7 +427,7 @@ const Schedule = () => {
     setSelectedDate({
       [day.dateString]: {
         selected: true,
-        selectedColor: 'blue',
+        selectedColor: '#0D1282',
       },
     });
     setCurrentDay(day.dateString);
@@ -581,7 +581,7 @@ const Schedule = () => {
                   <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, backgroundColor: '#003', alignItems: 'center', justifyContent: 'center' }} onPress={handleBackButton}>
                     <Text style={{ color: 'white' }}>Quay lại</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, backgroundColor: isTitleEmpty ? 'lightgray' : 'blue', alignItems: 'center', justifyContent: 'center' }} onPress={addTask} disabled={isTitleEmpty}>
+                  <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, backgroundColor: isTitleEmpty ? 'lightgray' : '#0D1282', alignItems: 'center', justifyContent: 'center' }} onPress={addTask} disabled={isTitleEmpty}>
                     <Text style={{ color: 'white' }}>Thêm</Text>
                   </TouchableOpacity>
                 </View>
@@ -606,7 +606,7 @@ const Schedule = () => {
                 </Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', flex: 1 }}>
                   <TouchableOpacity onPress={() => openEditModal(item)} disabled={item.status === 1}>
-                    <Icon name="create-outline" size={20} color={item.status === 1 ? 'gray' : 'blue'} />
+                    <Icon name="create-outline" size={20} color={item.status === 1 ? 'gray' : '#0D1282'} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => deleteTask(item.id)} style={{ marginLeft: 10 }} disabled={item.status === 1}>
                     <Icon name="trash" size={20} color={item.status === 1 ? 'gray' : 'red'} />
@@ -670,7 +670,7 @@ const Schedule = () => {
                   <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, marginTop: 5, backgroundColor: '#003', alignItems: 'center', justifyContent: 'center' }} onPress={handleBackUpdateButton}>
                     <Text style={{ color: 'white' }}>Quay lại</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, marginTop: 5, backgroundColor: isTitleUpdateEmpty ? 'lightgray' : 'blue', alignItems: 'center', justifyContent: 'center' }}
+                  <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, marginTop: 5, backgroundColor: isTitleUpdateEmpty ? 'lightgray' : '#0D1282', alignItems: 'center', justifyContent: 'center' }}
                     onPress={() => {
                       if (!isTitleUpdateEmpty) {
                         editTask(newTask);
@@ -760,6 +760,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     marginTop: 10,
     borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
   containerModal: {
     flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center'

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Toast from 'react-native-toast-message';
-import { Text, StyleSheet, View, TextInput,  TouchableWithoutFeedback, Keyboard, ActivityIndicator, TouchableOpacity, FlatList} from 'react-native';
+import { Text, StyleSheet, View, TextInput, TouchableWithoutFeedback, Keyboard, ActivityIndicator, TouchableOpacity, FlatList } from 'react-native';
 import { LoginDefault, getResultRegister, getSubjectClass, registerSubject } from '../service/NLUApiCaller';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -8,6 +8,7 @@ import BottomSheet, { BottomSheetFlatList, BottomSheetView } from '@gorhom/botto
 import { getUser } from '../service/NLUAppApiCaller';
 import User from '../model/User';
 import SubjectClass from '../model/SubjectClass';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 
 export default function RegisterClass() {
     const [subjectClassAll, setSubjectClassAll] = useState([]);
@@ -15,10 +16,12 @@ export default function RegisterClass() {
     const [subjectClasses, setSubjectClasses] = useState([]);
     const [resultRegister, setResultRegister] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isRefreshing, setRefreshing] = useState(false);
     const [user, setUser] = useState(new User('', '', true, false, null, ''));
     const [subjectClassDetails, setSubjectClassDetails] = useState(new SubjectClass('', '', '', '', '', '', '', '', '', '', '', ''));
     const bottomSheetRef = useRef(null);
     const detailsBSRef = useRef(null);
+    const resultRef = useRef(null);
 
     useEffect(() => {
         setIsLoading(true);
@@ -46,6 +49,35 @@ export default function RegisterClass() {
         })
         setIsLoading(false);
     }, []);
+
+    const refreshHandler = () => {
+        setRefreshing(true);
+        LoginDefault().then(() => {
+            getSubjectClass().then((val) => {
+                if (val) {
+                    setSubjectClassAll(val);
+                    setSubjectClasses(val);
+                } else {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Có lỗi xảy ra!',
+                        text2: 'Không thể lấy dữ liệu từ trang ĐKMH',
+                        visibilityTime: 2000,
+                        autoHide: true,
+                    });
+                }
+            });
+            getResultRegister().then(vals => {
+                if (vals) setResultRegister(vals);
+            });
+            AsyncStorage.getItem('id').then(id => {
+                getUser(id).then(u => {
+                    setUser(u);
+                })
+            });
+            setRefreshing(false);
+        })
+    }
 
     const unchoose = (id) => {
         const unchosen = classChosen.filter(item => item.id !== id);
@@ -99,6 +131,7 @@ export default function RegisterClass() {
 
     const doSearch = (text) => {
         const data = subjectClassAll.filter(item => item.idSubject.indexOf(text) !== -1 || item.name.toLowerCase().indexOf(text.toLowerCase()) !== -1);
+        console.log(data)
         setSubjectClasses(data);
     }
 
@@ -107,7 +140,7 @@ export default function RegisterClass() {
             <BottomSheetView>
                 <View style={{ flexDirection: 'column', width: '95%', alignSelf: 'center', }}>
                     <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>{subjectClass.name} ({subjectClass.idSubject})</Text>
-                    <View style={[styles.rowDetails, { backgroundColor: 'lightgray', borderTopLeftRadius: 10, borderTopRightRadius: 10}]}>
+                    <View style={[styles.rowDetails, { backgroundColor: 'lightgray', borderTopLeftRadius: 10, borderTopRightRadius: 10 }]}>
                         <Text style={styles.textDetails}>Nhóm: {subjectClass.group}</Text>
                         <Text style={styles.textDetails}>Số TC: {subjectClass.numCredit}</Text>
                     </View>
@@ -116,11 +149,11 @@ export default function RegisterClass() {
                         <Text style={styles.textDetails}>Tiết BD: {subjectClass.startLesson}</Text>
                         <Text style={styles.textDetails}>Số tiết: {subjectClass.numLesson}</Text>
                     </View>
-                    <View style={[styles.rowDetails, { backgroundColor: 'lightgray'}]}>
+                    <View style={[styles.rowDetails, { backgroundColor: 'lightgray' }]}>
                         <Text style={styles.textDetails}>Số lượng: {subjectClass.numStudent}</Text>
                         <Text style={styles.textDetails}>Còn lại: {subjectClass.remain}</Text>
                     </View>
-                    <View style={[styles.rowDetails, { backgroundColor: '#eeeeee', borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
+                    <View style={[styles.rowDetails, { backgroundColor: '#eeeeee', borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]}>
                         <Text style={[styles.textDetails,]}>Chi tiết: {subjectClass.schedule}</Text>
                     </View>
                 </View>
@@ -165,8 +198,82 @@ export default function RegisterClass() {
         )
     }
 
+    const resultBottomSheetItem = ({ item, index }) => {
+        let bgColor = '#eeeeee';
+        let radiusTop = 0;
+        let radiusBottom = 0;
+        if (index % 2 == 0) bgColor = 'lightgray';
+        if (index == 0) radiusTop = 5;
+        if (index == resultRegister.length - 1) radiusBottom = 5;
+        return (
+            <TouchableOpacity style={{ width: '95%', alignSelf: 'center' }} >
+                <View style={[styles.row, { marginVertical: 0, borderRadius: 0, backgroundColor: bgColor, borderTopLeftRadius: radiusTop, borderTopRightRadius: radiusTop, borderBottomLeftRadius: radiusBottom, borderBottomRightRadius: radiusBottom }]}>
+                    <Text style={[styles.cell, { flex: 0.18, textAlign: 'center' }]}>{item.idSubject}</Text>
+                    <Text style={[styles.cell, { flex: 0.57 }]}>{item.name}</Text>
+                    <Text style={[styles.cell, { flex: 0.15, textAlign: 'center' }]}>{item.group}</Text>
+                    <TouchableOpacity style={[styles.cell, { flex: 0.10, }]} onPress={() => cancelRegister(item)}>
+                        <Icon style={{ color: 'black', }} name="trash-bin-outline" color='black' size={20} />
+                    </TouchableOpacity>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
+    const cancelRegister = async (item) => {
+        setIsLoading(true);
+        await LoginDefault();
+        let result = await registerSubject(item.id);
+        console.log(result);
+        if (result == null) {
+            Toast.show({
+                type: 'error',
+                text1: 'Có lỗi gì đó rồi á!',
+                text2: 'Thử tắt mở lại xem, biết đâu lại được :v',
+                visibilityTime: 3000,
+                autoHide: true,
+            });
+            return;
+        }
+        if (result === false) {
+            Toast.show({
+                type: 'success',
+                text1: 'Hủy môn thành công!',
+                text2: classChosen[i].name,
+                visibilityTime: 3000,
+                autoHide: true,
+            });
+            refreshHandler();
+        } else if (result === true) {
+            Toast.show({
+                type: 'error',
+                text1: 'SOS!',
+                text2: classChosen[i].name,
+                visibilityTime: 3000,
+                autoHide: true,
+            });
+            refreshHandler();
+        } else if (result == 'Cảnh báo: tài khoản của bạn không được đăng ký/hủy đăng ký ở thời điểm hiện tại.') {
+            Toast.show({
+                type: 'error',
+                text1: 'Ngoài thời gian đăng ký môn học á bạn -_-',
+                visibilityTime: 3000,
+                autoHide: true,
+            });
+            setIsLoading(false);
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Có lỗi gì đó! Lỗi gì thì ai mà biết ...',
+                text2: result,
+                visibilityTime: 3000,
+                autoHide: true,
+            });
+        }
+        setIsLoading(false);
+    }
+
     const startRegister = async () => {
-        if (classChosen.length<1) {
+        if (classChosen.length < 1) {
             Toast.show({
                 type: 'error',
                 text1: 'Đã chọn môn nào đâu mà đăng ký! hmmm...',
@@ -179,7 +286,7 @@ export default function RegisterClass() {
         setIsLoading(true);
         let res = []
         await LoginDefault();
-        for (let i = 0; i<classChosen.length;i++){
+        for (let i = 0; i < classChosen.length; i++) {
             let result = await registerSubject(classChosen[i].id);
             if (result == null) {
                 Toast.show({
@@ -194,7 +301,7 @@ export default function RegisterClass() {
             }
             if (result === true) {
                 Toast.show({
-                    type: 'info',
+                    type: 'success',
                     text1: 'Đăng ký xong 1 môn nè!',
                     text2: classChosen[i].name,
                     visibilityTime: 3000,
@@ -202,13 +309,13 @@ export default function RegisterClass() {
                 });
             } else if (result === false) {
                 Toast.show({
-                    type: 'info',
-                    text1: 'Hủy xong 1 môn nè!',
+                    type: 'error',
+                    text1: 'Hủy nhầm 1 môn nè!',
                     text2: classChosen[i].name,
                     visibilityTime: 3000,
                     autoHide: true,
                 });
-            } if (result == 'Cảnh báo: tài khoản của bạn không được đăng ký/hủy đăng ký ở thời điểm hiện tại.'){
+            } else if (result == 'Cảnh báo: tài khoản của bạn không được đăng ký/hủy đăng ký ở thời điểm hiện tại.') {
                 Toast.show({
                     type: 'error',
                     text1: 'Ngoài thời gian đăng ký môn học á bạn -_-',
@@ -220,7 +327,7 @@ export default function RegisterClass() {
             } else {
                 Toast.show({
                     type: 'error',
-                    text1: 'Có lỗi gì đó!',
+                    text1: 'Có lỗi gì đó! Lỗi gì thì ai mà biết ...',
                     text2: result,
                     visibilityTime: 3000,
                     autoHide: true,
@@ -229,85 +336,114 @@ export default function RegisterClass() {
             }
         }
         setIsLoading(false);
+        refreshHandler();
         Toast.show({
             type: 'success',
-            text1: 'Xong hết rồi nè bạn eiii! ('+(classChosen.length-res.length)+'/'+classChosen.length+')',
+            text1: 'Xong hết rồi nè bạn eiii! (' + (classChosen.length - res.length) + '/' + classChosen.length + ')',
             text2: 'Có ' + res.length + ' môn đăng ký không thành công!',
             visibilityTime: 20000,
             autoHide: false,
         });
-        
+
         return res;
     }
 
     return (
-        <>{user.isVip ?
-            (<TouchableWithoutFeedback onPress={() => {
-                Keyboard.dismiss();
-            }}>
-                <View style={styles.container}>
-                    <View style={styles.table}>
-                        <View style={styles.headerPane}>
-                            <View style={styles.headerRow}>
-                                <Text style={[styles.header, { flex: 0.18, textAlign: 'center' }]}>Mã</Text>
-                                <Text style={[styles.header, { flex: 0.57 }]}>Tên môn</Text>
-                                <Text style={[styles.header, { flex: 0.15, textAlign: 'center' }]}>Nhóm</Text>
-                                <Text style={[styles.header, { flex: 0.10, textAlign: 'center' }]}></Text>
+        <>
+            {user.isVip ?
+                (<TouchableWithoutFeedback onPress={() => {
+                    Keyboard.dismiss();
+                }}>
+                    <View style={styles.container}>
+                        <View style={styles.table}>
+                            <View style={styles.headerPane}>
+                                <View style={styles.headerRow}>
+                                    <Text style={[styles.header, { flex: 0.18, textAlign: 'center' }]}>Mã</Text>
+                                    <Text style={[styles.header, { flex: 0.57 }]}>Tên môn</Text>
+                                    <Text style={[styles.header, { flex: 0.15, textAlign: 'center' }]}>Nhóm</Text>
+                                    <Text style={[styles.header, { flex: 0.10, textAlign: 'center' }]}></Text>
+                                </View>
                             </View>
-                        </View>
-                        <View style={styles.tablePane}>
-                            {classChosen.length > 0 ?
-                                (<FlatList data={classChosen} keyExtractor={item => item.id} renderItem={classItem} />)
-                                : (<View style={[styles.row,]}>
-                                    <Text style={{ textAlign: 'center', flex: 1, color: 'gray' }}>Không có môn học nào được chọn</Text>
-                                </View>)}
+                            <View style={styles.tablePane}>
+                                {classChosen.length > 0 ?
+                                    (<FlatList data={classChosen} keyExtractor={item => item.id} renderItem={classItem} refreshControl={
+                                        <RefreshControl refreshing={isRefreshing} onRefresh={refreshHandler} />
+                                    } />)
+                                    : (<ScrollView refreshControl={
+                                        <RefreshControl refreshing={isRefreshing} onRefresh={refreshHandler} />
+                                    }>
+                                        <View style={[styles.row,]}>
+                                            <Text style={{ textAlign: 'center', flex: 1, color: 'gray' }}>Không có môn học nào được chọn</Text>
+                                        </View>
+                                    </ScrollView>)}
 
-                        </View>
-                        <View style={{ alignItems: 'center' }}>
-                            <TouchableOpacity style={[styles.button, { minWidth: '60%', backgroundColor: 'white', marginTop: 5}]} onPress={() => bottomSheetRef.current.expand()}>
-                                <Text style={[styles.buttonTitle, { color: '#2196F3' }]}>Thêm môn</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    {isLoading ? (
-                        <View style={styles.loadingContainer}>
-                            <ActivityIndicator size="large" color="#2bc250" />
-                        </View>) : (<></>)
-                    }
-
-                    <View style={styles.startButtonBlock}>
-                        <TouchableOpacity style={[styles.button, styles.startButton]} onPress={()=>startRegister()}>
-                            <Text style={styles.buttonTitle}>Đăng ký</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <BottomSheet ref={bottomSheetRef} index={0} snapPoints={['1%','50%', '75%', '100%']} enablePanDownToClose={true} >
-                        <View style={styles.searchContainer}>
-                            <View style={styles.searchBlock}>
-                                <TextInput style={styles.searchInput} placeholder='Nhập tên môn hoặc mã môn' placeholderTextColor={'lightgray'} onChangeText={(text) => doSearch(text)} />
-                                <TouchableOpacity style={styles.searchButton} onPress={() => { }}>
-                                    <Icon style={{ color: 'lightgray', }} name="search" size={20} />
+                            </View>
+                            <View style={{ alignItems: 'center' }}>
+                                <TouchableOpacity style={[styles.button, { minWidth: '60%', backgroundColor: 'white', marginTop: 5 }]} onPress={() => bottomSheetRef.current.expand()}>
+                                    <Text style={[styles.buttonTitle, { color: '#2196F3' }]}>Thêm môn</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <BottomSheetFlatList
-                            data={subjectClasses}
-                            keyExtractor={(item) => item.id}
-                            renderItem={bottomSheetItem}
-                            contentContainerStyle={styles.contentContainer}
-                        />
-                    </BottomSheet>
-                    <BottomSheet ref={detailsBSRef} snapPoints={['1%','35%', '60%']} enablePanDownToClose={true}>
-                        <SubjectDetails subjectClass={subjectClassDetails} />
-                    </BottomSheet>
-                </View>
+                        {isLoading ? (
+                            <View style={styles.loadingContainer}>
+                                <ActivityIndicator size="large" color="#2bc250" />
+                            </View>) : (<></>)
+                        }
 
-            </TouchableWithoutFeedback>)
-            : (
-                <View style={{ alignItems: 'center', height: '100%', justifyContent: 'center' }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Chức năng chỉ dành cho VIP</Text>
-                    <Text style={{ fontSize: 15, color: 'gray' }}>Nạp lần đầu đi bạn eiii</Text>
-                </View>
-            )}
+                        <View style={styles.startButtonBlock}>
+                            <TouchableOpacity style={[styles.button, styles.resultButton]} onPress={() => resultRef.current.expand()}>
+                                <Text style={[styles.buttonTitle, { color: '#2196F3' }]}>Kết quả</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.button, styles.startButton]} onPress={() => startRegister()}>
+                                <Text style={styles.buttonTitle}>Đăng ký</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <BottomSheet ref={bottomSheetRef} index={0} snapPoints={['1%', '50%', '75%', '100%']} enablePanDownToClose={true} >
+                            <View style={styles.searchContainer}>
+                                <View style={styles.searchBlock}>
+                                    <TextInput style={styles.searchInput} placeholder='Nhập tên môn hoặc mã môn' placeholderTextColor={'lightgray'} onChangeText={(text) => doSearch(text)} />
+                                    <TouchableOpacity style={styles.searchButton} onPress={() => { }}>
+                                        <Icon style={{ color: 'lightgray', }} name="search" size={20} />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                            <BottomSheetFlatList
+                                data={subjectClasses}
+                                keyExtractor={(item) => item.id}
+                                renderItem={bottomSheetItem}
+                                contentContainerStyle={styles.contentContainer}
+                            />
+                        </BottomSheet>
+                        <BottomSheet ref={detailsBSRef} snapPoints={['1%', '35%', '60%']} enablePanDownToClose={true}>
+                            <SubjectDetails subjectClass={subjectClassDetails} />
+                        </BottomSheet>
+                        <BottomSheet ref={resultRef} snapPoints={['1%', '60%', '100%']} enablePanDownToClose={true}>
+                            <Text style={{ margin: 10, fontSize: 20, fontWeight: 'bold' }}>Kết quả đăng ký</Text>
+                            <View style={styles.headerPane}>
+                                <View style={styles.headerRow}>
+                                    <Text style={[styles.header, { flex: 0.18, textAlign: 'center' }]}>Mã</Text>
+                                    <Text style={[styles.header, { flex: 0.57 }]}>Tên môn</Text>
+                                    <Text style={[styles.header, { flex: 0.15, textAlign: 'center' }]}>Nhóm</Text>
+                                    <Text style={[styles.header, { flex: 0.10, textAlign: 'center' }]}></Text>
+                                </View>
+                            </View>
+                            <BottomSheetFlatList
+                                style={{ borderRadius: 10 }}
+                                data={resultRegister}
+                                keyExtractor={(item) => item.id + item.idSubject}
+                                renderItem={({ item, index }) => resultBottomSheetItem({ item, index })}
+                                contentContainerStyle={styles.contentContainer}
+                            />
+                        </BottomSheet>
+                    </View>
+
+                </TouchableWithoutFeedback>)
+                : (
+                    <View style={{ alignItems: 'center', height: '100%', justifyContent: 'center' }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Chức năng chỉ dành cho VIP</Text>
+                        <Text style={{ fontSize: 15, color: 'gray' }}>Nạp lần đầu đi bạn eiii</Text>
+                    </View>
+                )}
         </>
 
 
@@ -336,13 +472,12 @@ const styles = StyleSheet.create({
         paddingRight: 5
     },
     tablePane: {
-        maxHeight: '95%'
+        maxHeight: '80%'
     },
     row: {
         flexDirection: 'row',
         backgroundColor: 'lightgray',
-        marginTop: 5,
-        marginBottom: 5,
+        marginVertical: 5,
         paddingTop: 10,
         paddingBottom: 10,
         borderRadius: 5,
@@ -369,15 +504,24 @@ const styles = StyleSheet.create({
         }),
     },
     startButtonBlock: {
-        width: '80%',
+        width: '90%',
+        flexDirection: 'row',
         alignItems: 'center',
         position: 'absolute',
+        justifyContent: 'space-between',
         bottom: 20,
-        left: '10%'
+        left: '5%'
     },
     startButton: {
-        width: '100%',
-
+        width: '45%',
+        borderWidth: 2,
+        borderColor: '#2196F3'
+    },
+    resultButton: {
+        width: '45%',
+        backgroundColor: 'white',
+        borderWidth: 2,
+        borderColor: '#2196F3',
     },
     buttonTitle: {
         fontWeight: 'bold',
@@ -428,13 +572,13 @@ const styles = StyleSheet.create({
         position: 'absolute',
         zIndex: 1,
         backgroundColor: '#bec4c2',
-        top: '50%',
-        left: '50%',
-        transform: [{ translateX: -75 }, { translateY: 0 }],
-        width: 150,
-        height: 150,
+        top: 0,
+        left: 0,
+        // transform: [{ translateX: -75 }, { translateY: 0 }],
+        width: '100%',
+        height: '100%',
         justifyContent: 'center',
         borderRadius: 10,
-        opacity: 0.8,
+        opacity: 0.6,
     }
 })

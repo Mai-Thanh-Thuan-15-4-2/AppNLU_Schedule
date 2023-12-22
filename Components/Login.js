@@ -31,7 +31,7 @@ export default function Login({ navigation }) {
                 isBack = true;
                 Toast.show({
                     type: 'info',
-                    text1: 'Nhấn nút back lần nữa để thoát',
+                    text1: 'Nhấn nút back lần nữa để thoát nhé',
                     visibilityTime: 2000,
                     autoHide: true,
                 });
