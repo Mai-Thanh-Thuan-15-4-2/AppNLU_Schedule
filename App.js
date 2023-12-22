@@ -9,6 +9,7 @@ import Profile from './Components/Profile';
 import About from './Components/About';
 import RegisterClass from './Components/RegisterClass';
 import Score from './Components/Score';
+import Map from './Components/Map';
 import EducationFees from './Components/EducationFees';
 import ExamsSchedule from './Components/ExamsSchedule';
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
           <Stack.Screen name="Xem điểm" component={Score} options={{headerShown: true, gestureEnabled: true }}/>
           <Stack.Screen name="Xem lịch thi" component={ExamsSchedule} options={{headerShown: true, gestureEnabled: true }}/>
           <Stack.Screen name="Học Phí" component={EducationFees} options={{headerShown: true, gestureEnabled: true }}/>
+          <Stack.Screen name="Bản đồ" component={Map} options={{headerShown: true, gestureEnabled: true }} />
           <Stack.Screen name="Hỗ trợ" component={ReportBug} options={{headerShown: true, gestureEnabled: true }} />
           <Stack.Screen name="MenuPane" component={MenuPane} options={{ gestureEnabled: false }} />
         </Stack.Navigator>

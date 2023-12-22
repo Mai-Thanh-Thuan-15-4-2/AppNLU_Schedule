@@ -10,7 +10,7 @@ const items = [
   { title: 'Xem điểm', icon: 'bar-chart', screen: 'Xem điểm' }, // đổi link screen ở đây
   { title: 'Lịch thi', icon: 'calendar', screen: 'Xem lịch thi' },
   { title: 'Chat GPT', icon: 'chatbubble-outline', screen: 'ChatGPTScreen' },
-  { title: 'Chương trình đào tạo', icon: 'book', screen: 'ChuongTrinhDaoTaoScreen' },
+  { title: 'Bản đồ', icon: 'map', screen: 'Bản đồ' },
   { title: 'Học phí', icon: 'cash-outline', screen: 'Học Phí' },
 ];
 

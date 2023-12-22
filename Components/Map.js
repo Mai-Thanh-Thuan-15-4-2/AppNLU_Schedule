@@ -1,31 +1,76 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Linking } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { View, StyleSheet } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 class Map extends Component {
-  componentDidMount() {
-    this.checkURL('https://maps.google.com/?ll=10.871601,106.791707&z=17&t=k');
+  constructor(props) {
+    super(props);
+    this.state = {
+      markers: [],
+    };
   }
 
-  checkURL = async (url) => {
-    const supported = await Linking.canOpenURL(url);
+  onPlaceSelected = (data, details = null) => {
+    console.log("Selected Place Data: ", data);
+    console.log("Selected Place Details: ", details);
+    const { geometry } = details;
+    const { location } = geometry;
+    const { lat, lng } = location;
 
-    if (!supported) {
-      console.log("Can't handle url: " + url);
-    } else {
-      this.setState({ url });
-    }
+    const newMarker = {
+      coordinate: {
+        latitude: lat,
+        longitude: lng,
+      },
+      title: details.name,
+      description: details.formatted_address,
+    };
+
+    this.setState((prevState) => ({
+      markers: [...prevState.markers, newMarker],
+    }));
   };
 
   render() {
     return (
       <View style={styles.container}>
-        {this.state?.url && (
-          <WebView
-            source={{ uri: this.state.url }}
-            style={styles.webview}
-          />
-        )}
+        <MapView
+          style={styles.map}
+          region={{
+            latitude: 10.871601,
+            longitude: 106.791707,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        >
+          {this.state.markers.map((marker, index) => (
+            <Marker
+              key={index}
+              coordinate={marker.coordinate}
+              title={marker.title}
+              description={marker.description}
+            />
+          ))}
+        </MapView>
+
+        <GooglePlacesAutocomplete
+          placeholder="Tìm kiếm"
+          onPress={this.onPlaceSelected}
+          query={{
+            key: 'AIzaSyBAsQCKjWH6C3kGWzzJCxUF07eztjCVQRY',
+            language: 'vi', 
+          }}
+          fetchDetails={true}
+          styles={{
+            container: {
+              position: 'absolute',
+              top: 10,
+              left: 10,
+              right: 10,
+            },
+          }}
+        />
       </View>
     );
   }
@@ -33,10 +78,12 @@ class Map extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
-  webview: {
-    flex: 1,
+  map: {
+    ...StyleSheet.absoluteFillObject,
   },
 });
 

@@ -17,7 +17,7 @@ const NotificationStack = createStackNavigator();
 const NotificationStackScreen = () => (
   <NotificationStack.Navigator screenOptions={{ headerShown: false}} >
   <NotificationStack.Screen name="Tất cả thông báo" component={Notification} />
-  <NotificationStack.Screen name="Thông Báo Chi Tiết" component={NotificationDetail} options={{ headerShown: true }}  />
+  <NotificationStack.Screen name="Thông Báo Chi Tiết" component={NotificationDetail} options={{ headerShown: false }}  />
 </NotificationStack.Navigator>
 
 );
