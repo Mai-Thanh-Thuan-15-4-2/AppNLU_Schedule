@@ -10,7 +10,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Extensions from './Extensions';
 import About from './About';
 import {colors, buttonStyles} from '../BaseStyle/Style';
-
+import EducationFees from './EducationFees';
+import ExamsSchedule from './ExamsSchedule';
 const NotificationStack = createStackNavigator();
 
 const NotificationStackScreen = () => (
