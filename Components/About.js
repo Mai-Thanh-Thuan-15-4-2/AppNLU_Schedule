@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../BaseStyle/Style';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const About = () => {
   const navigation = useNavigation();
@@ -12,9 +13,13 @@ const About = () => {
     navigation.navigate('Thông tin');
   };
 
-  const handleLogout = () => {
-    // Thực hiện logic đăng xuất ở đây
-    // Sau khi đăng xuất, chuyển về màn hình đăng nhập hoặc màn hình chính
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    navigation.navigate('Login');
+  };
+
+  const handleVip = () => {
+    navigation.navigate('Quyền lợi VIP');
   };
 
   const handleReportBug = () => {
@@ -36,7 +41,7 @@ const About = () => {
         <Text style={styles.itemText}>Hỗ trợ</Text>
       </TouchableOpacity>
       {/* Item VIP */}
-      <TouchableOpacity style={styles.item} onPress={handleLogout}>
+      <TouchableOpacity style={styles.item} onPress={handleVip}>
         <Icon name="star" style={styles.icon_vip} />
         <Text style={styles.itemText}>VIP Member</Text>
       </TouchableOpacity>

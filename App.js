@@ -11,6 +11,8 @@ import RegisterClass from './Components/RegisterClass';
 import Score from './Components/Score';
 import EducationFees from './Components/EducationFees';
 import ExamsSchedule from './Components/ExamsSchedule';
+import ChatGPT from './Components/ChatGPT';
+import Vip from './Components/Vip';
 const App = () => {
   const Stack = createStackNavigator();
   return (
@@ -26,6 +28,8 @@ const App = () => {
           <Stack.Screen name="Học Phí" component={EducationFees} options={{headerShown: true, gestureEnabled: true }}/>
           <Stack.Screen name="Hỗ trợ" component={ReportBug} options={{headerShown: true, gestureEnabled: true }} />
           <Stack.Screen name="MenuPane" component={MenuPane} options={{ gestureEnabled: false }} />
+          <Stack.Screen name="ChatGPT" component={ChatGPT} options={{headerShown: true, gestureEnabled: true }} />
+          <Stack.Screen name="Quyền lợi VIP" component={Vip} options={{headerShown: true, gestureEnabled: true }} />
         </Stack.Navigator>
           
         <Toast />
