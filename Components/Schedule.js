@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {PanResponder, TouchableWithoutFeedback, KeyboardAvoidingView, TouchableOpacity, Dimensions, FlatList, View, Text, TextInput, Modal, ActivityIndicator, StyleSheet } from 'react-native';
+import {Keyboard, PanResponder, TouchableWithoutFeedback, KeyboardAvoidingView, TouchableOpacity, Dimensions, FlatList, View, Text, TextInput, Modal, ActivityIndicator, StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment/min/moment-with-locales';
@@ -591,8 +591,8 @@ const Schedule = () => {
         <View style={styles.innerContainer}>
           <Text style={styles.marginRT_5 + styles.font_30}>Tổng số: <Text style={styles.textblue_bold}>{totalTasksForCurrentDay}</Text></Text>
         </View>
-        <TouchableWithoutFeedback onPress={closeModalAndDismissKeyboard}>
         <Modal visible={showModal} transparent={true} animationType="slide">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
           <View style={styles.containerModal}>
             <View style={styles.modalContent}>
@@ -647,8 +647,9 @@ const Schedule = () => {
             </View>
           </View>
           </KeyboardAvoidingView>
+          </TouchableWithoutFeedback>
         </Modal>
-        </TouchableWithoutFeedback>
+  
         <View style={{ height: flatListHeight }}>
           <FlatList
             data={uniqueTasks(tasks[currentDay] ?? [])}
@@ -679,6 +680,7 @@ const Schedule = () => {
           />
         </View>
         <Modal visible={isModal2Visible} transparent={true} animationType="slide">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
           <View style={styles.containerModal}>
             <View style={styles.modalContent}>
@@ -746,7 +748,9 @@ const Schedule = () => {
             </View>
           </View>
           </KeyboardAvoidingView>
+          </TouchableWithoutFeedback>
         </Modal>
+      
       </View>
       {isLoading ? (
         <View style={loadPage.loadingContainer}>
