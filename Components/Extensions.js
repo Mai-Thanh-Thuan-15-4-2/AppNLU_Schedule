@@ -9,8 +9,8 @@ const items = [
   { title: 'ĐKMH', icon: 'book', screen: 'RegisterClass' },
   { title: 'Xem điểm', icon: 'bar-chart', screen: 'Xem điểm' }, // đổi link screen ở đây
   { title: 'Lịch thi', icon: 'calendar', screen: 'Xem lịch thi' },
+  { title: 'Bản đồ', icon: 'map', screen: 'Bản đồ' },
   { title: 'Chat GPT', icon: 'chatbubble-outline', screen: 'ChatGPT' },
-  { title: 'Chương trình đào tạo', icon: 'book', screen: 'ChuongTrinhDaoTaoScreen' },
   { title: 'Học phí', icon: 'cash-outline', screen: 'Học Phí' },
 ];
 

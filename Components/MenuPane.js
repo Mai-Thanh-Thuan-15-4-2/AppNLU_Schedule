@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Schedule from './Schedule';
 import Notification from './Notification';
+import NotificationDetail from './NotificationDetail';
 import Login from './Login';
 import RegisterClass from './RegisterClass';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -11,28 +12,15 @@ import About from './About';
 import {colors, buttonStyles} from '../BaseStyle/Style';
 import EducationFees from './EducationFees';
 import ExamsSchedule from './ExamsSchedule';
-
 const NotificationStack = createStackNavigator();
 
-// const NotificationStackScreen = () => (
-//   <NotificationStack.Navigator screenOptions={{ headerShown: false}} >
-//   <NotificationStack.Screen name="Tất cả thông báo" component={Notification} />
-//   <NotificationStack.Screen name="Thông Báo Chi Tiết" component={NotificationDetail} options={{
-//     headerShown: true,
-//     headerStyle: {
-//       height: 60, 
-//       backgroundColor: '#F5EFE7', 
-//       elevation: 0, 
-//     },
-//     headerTitleStyle: {
-//       fontSize: 18, 
-//       fontWeight: 'bold', 
-//       textAlign: 'center',
-//     },
-//   }}  />
-// </NotificationStack.Navigator>
+const NotificationStackScreen = () => (
+  <NotificationStack.Navigator screenOptions={{ headerShown: false}} >
+  <NotificationStack.Screen name="Tất cả thông báo" component={Notification} />
+  <NotificationStack.Screen name="Thông Báo Chi Tiết" component={NotificationDetail} options={{ headerShown: false }}  />
+</NotificationStack.Navigator>
 
-// );
+);
 
 const Tab = createBottomTabNavigator();
 
@@ -64,7 +52,7 @@ const MenuPane = () => {
     >
       <Tab.Screen name="Lịch học" component={Schedule} />
       <Tab.Screen name="Tiện ích" component={Extensions}/>
-      <Tab.Screen name="Thông báo" component={Notification}/>
+      <Tab.Screen name="Thông báo" component={NotificationStackScreen}/>
       <Tab.Screen name="Hồ sơ" component={About}/>
     </Tab.Navigator>
   );

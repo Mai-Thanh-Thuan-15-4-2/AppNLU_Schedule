@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, FlatList, View, Text, Button, TextInput, Modal, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {Keyboard, PanResponder, TouchableWithoutFeedback, KeyboardAvoidingView, TouchableOpacity, Dimensions, FlatList, View, Text, TextInput, Modal, ActivityIndicator, StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment/min/moment-with-locales';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { colors, loadPage } from '../BaseStyle/Style';
 import { Alert } from 'react-native';
 import { getSchedule, getSemesters } from '../service/NLUApiCaller';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,12 +16,6 @@ const Schedule = () => {
   const [data, setData] = useState([]);
   const [selectedValue, setSelectedValue] = useState(null);
   const [lastTaskId, setLastTaskId] = useState(0);
-  const [selectedDate, setSelectedDate] = useState({
-    [moment().format('YYYY-MM-DD')]: {
-      selected: true,
-      selectedColor: '#0D1282',
-    },
-  });
   const [isTitleEmpty, setIsTitleEmpty] = useState(true);
   const [isTitleUpdateEmpty, setIsTitleUpdateEmpty] = useState(false);
   const [numberOfWeeks, setNumberOfWeeks] = useState(1);
@@ -30,23 +25,15 @@ const Schedule = () => {
   const [newTask, setNewTask] = useState({});
   const [currentDay, setCurrentDay] = useState(moment().format('YYYY-MM-DD'));
   const [semesters, setSemesters] = useState([]);
+  const [currentSemester, setCurrentSemester] = useState(null);
+  const [selectedDate, setSelectedDate] = useState({
+    [moment().format('YYYY-MM-DD')]: {
+      selected: true,
+      selectedColor: '#0D1282',
+    },
+  });
 
 
-
-
-  const handleIncrease1 = () => {
-    setNewTask(prev => ({
-      ...prev,
-      numberOfWeeks: (prev.numberOfWeeks || 0) + 1
-    }));
-  };
-
-  const handleDecrease1 = () => {
-    setNewTask(prev => ({
-      ...prev,
-      numberOfWeeks: (prev.numberOfWeeks > 1 ? prev.numberOfWeeks - 1 : 1)
-    }));
-  };
   const handleIncrease = () => {
     setNumberOfWeeks(prevNumber => prevNumber + 1);
   };
@@ -60,9 +47,6 @@ const Schedule = () => {
     if (!isNaN(parsedNumber)) {
       setNumberOfWeeks(parsedNumber);
     }
-  };
-  const handleWeeksChange = (value) => {
-    setNumberOfWeeks(value);
   };
 
   const addTask = async () => {
@@ -159,13 +143,14 @@ const Schedule = () => {
       ]
     );
   };
+  // xử lý sự kiện nút back
   const handleBackButton = () => {
-    setIsTitleEmpty(true); 
-    setShowModal(false); 
+    setIsTitleEmpty(true);
+    setShowModal(false);
   };
   const handleBackUpdateButton = () => {
-    setIsTitleUpdateEmpty(false); 
-    setModal2Visible(false); 
+    setIsTitleUpdateEmpty(false);
+    setModal2Visible(false);
   };
   const openEditModal = (taskToEdit) => {
     const start = moment(taskToEdit.startDate);
@@ -183,7 +168,7 @@ const Schedule = () => {
     const start = moment(task.startDate);
     const oldEndDate = moment(task.endDate);
     const newEndDate = start.clone().add(task.numberOfWeeks * 7, 'days');
-    const dayOfWeek = start.day(); 
+    const dayOfWeek = start.day();
 
     if (newEndDate.isBefore(oldEndDate)) {
       Object.keys(updatedTasks).forEach(date => {
@@ -193,7 +178,7 @@ const Schedule = () => {
       });
     }
     if (newEndDate.isAfter(oldEndDate)) {
-      let date = oldEndDate.clone().add(1, 'weeks').day(dayOfWeek); 
+      let date = oldEndDate.clone().add(1, 'weeks').day(dayOfWeek);
       while (date.isSameOrBefore(newEndDate)) {
         const formattedDate = date.format('YYYY-MM-DD');
         if (!updatedTasks[formattedDate]) {
@@ -218,12 +203,11 @@ const Schedule = () => {
   };
 
 
-
   const generateMarkedDates = (tasks) => {
     const markedDates = {};
     const today = moment().format('YYYY-MM-DD');
 
-    for (e in tasks) {
+    for (const date in tasks) {
       if (tasks.hasOwnProperty(date) && tasks[date].length > 0) {
         const isToday = date === today;
 
@@ -262,10 +246,19 @@ const Schedule = () => {
           label: `${semester.name}`,
           value: semester.id,
         }));
+  
+        // Find the current semester based on the start and end dates
+        const now = moment();
+        const currentSem = semesters.find(semester => {
+          return now.isBetween(moment(semester.startDate), moment(semester.endDate));
+        });
+  
+        if (currentSem) {
+          setCurrentSemester(currentSem.id);
+          setSelectedValue(currentSem.id);
+        }
+  
         setData(formattedData);
-        // if (formattedData.length > 0) {
-        //   setSelectedValue(formattedData[0].value);
-        // }
       } catch (error) {
         Toast.show({
           type: 'error',
@@ -276,7 +269,7 @@ const Schedule = () => {
         });
       }
     };
-
+  
     fetchSemesters();
   }, []);
   /* calendar */
@@ -337,20 +330,38 @@ const Schedule = () => {
 
     fetchSemesters();
   }, []);
-
+// Xem lịch theo học kỳ
   useEffect(() => {
+    setIsLoading(true);
     const selectedSemester = semesters.find(semester => semester.id === selectedValue);
-    if (selectedSemester && selectedSemester.startDate) {
-      const formattedStartDate = moment(selectedSemester.startDate).format('20YY-MM-DD');
-      setSelectedDate({
-        [formattedStartDate]: {
-          selected: true,
-          selectedColor: '#0D1282',
-        },
-      });
-      setCurrentDay(formattedStartDate);
+    if (selectedSemester && selectedSemester.startDate && selectedSemester.endDate) {
+      const now = moment();
+      const startDate = moment(selectedSemester.startDate);
+      const endDate = moment(selectedSemester.endDate);
+  
+      // Check if the current date is within the selected semester
+      if (now.isBetween(startDate, endDate, undefined, '[]')) {
+        setCurrentDay(now.format('20YY-MM-DD'));
+        setSelectedDate({
+          [now.format('20YY-MM-DD')]: {
+            selected: true,
+            selectedColor: '#0D1282',
+          },
+        });
+      } else {
+        const formattedStartDate = startDate.format('20YY-MM-DD');
+        setSelectedDate({
+          [formattedStartDate]: {
+            selected: true,
+            selectedColor: '#0D1282',
+          },
+        });
+        setCurrentDay(formattedStartDate);
+      }
+      setIsLoading(false);
     }
-  }, [selectedValue, semesters]);
+  }, [selectedValue, semesters, isLoading]);
+  
   const uniqueTasks = (tasks) => {
     const seen = new Set();
     return tasks.filter(task => {
@@ -479,12 +490,47 @@ const Schedule = () => {
 
     }
   };
+  const windowHeight = Dimensions.get('window').height;
+  const bottomTabHeight = 60;
+  const flatListHeight = windowHeight * 0.35 - bottomTabHeight;
 
+  const [swipeCount, setSwipeCount] = useState(0);
+
+  const handleSwipeRight = () => {
+    setSwipeCount(prevCount => prevCount - 1);
+  };
+  
+  const handleSwipeLeft = () => {
+    setSwipeCount(prevCount => prevCount + 1);
+  };
+  
+  useEffect(() => {
+    const updatedDate = moment().add(swipeCount, 'months').format('YYYY-MM-DD');
+    setCurrentDay(updatedDate);
+  }, [swipeCount]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, gestureState) => {
+        if (gestureState.dx > 50) {
+          handleSwipeRight();
+        } else if (gestureState.dx < -50) {
+          handleSwipeLeft();
+        }
+      },
+    })
+  ).current;
+  const closeModalAndDismissKeyboard = () => {
+    Keyboard.dismiss(); 
+    setShowModal(false);
+  };
   return (
     <View style={{ flex: 1 }}>
       {isLoading && (
-
-        <ActivityIndicator style={styles.ActivityIndicator} size="large" color="#0000ff" />
+        <View style={loadPage.loadingContainer}>
+        <ActivityIndicator size="large" color="#2bc250" />
+        </View>
       )}
       <View style={{
         paddingHorizontal: 10,
@@ -497,18 +543,30 @@ const Schedule = () => {
             valueField="value"
             placeholder="Chọn học kỳ"
             value={selectedValue}
-            onChange={(item) => setSelectedValue(item.value)}
+            defaultValue={currentSemester}
+            onChange={(item) => {
+              setSelectedValue(item.value);
+              setIsLoading(true);
+              if (item.value === currentSemester) {
+                setCurrentDay(moment().format('YYYY-MM-DD'));
+              }
+            }}
           />
+
           <TouchableOpacity
             style={styles.refreshButton}
             onPress={reloadPage}
           >
-            <Icon name="ios-refresh" size={24} color="black" />
+            <Icon name="ios-refresh" size={30} style={{marginTop: 5}} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonAddTask} onPress={() => setShowModal(true)}>
+            <Text style={styles.addTask}>+</Text>
           </TouchableOpacity>
         </View>
-
+        <View {...panResponder.panHandlers}>
         <Calendar
           key={currentDay}
+          // ref={calendarRef}
           style={styles.calendar}
           markingType='custom'
           markedDates={{ ...markedDates, ...selectedDate }}
@@ -529,14 +587,13 @@ const Schedule = () => {
             },
           }}
         />
+        </View>
         <View style={styles.innerContainer}>
           <Text style={styles.marginRT_5 + styles.font_30}>Tổng số: <Text style={styles.textblue_bold}>{totalTasksForCurrentDay}</Text></Text>
-          <TouchableOpacity style={styles.buttonAddTask} onPress={() => setShowModal(true)}>
-            <Text style={styles.addTask}>+</Text>
-          </TouchableOpacity>
         </View>
-
         <Modal visible={showModal} transparent={true} animationType="slide">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
           <View style={styles.containerModal}>
             <View style={styles.modalContent}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -589,37 +646,42 @@ const Schedule = () => {
               </View>
             </View>
           </View>
+          </KeyboardAvoidingView>
+          </TouchableWithoutFeedback>
         </Modal>
-        <FlatList
-          data={uniqueTasks(tasks[currentDay] ?? [])}
-          keyExtractor={item => `${item.id}-${item.time}`}
-          style={{ height: 66 * 3 + 50 }}
-          renderItem={({ item }) => (
-            <View style={styles.containerFlatList}>
+  
+        <View style={{ height: flatListHeight }}>
+          <FlatList
+            data={uniqueTasks(tasks[currentDay] ?? [])}
+            keyExtractor={item => `${item.id}-${item.time}`}
+            renderItem={({ item }) => (
+              <View style={styles.containerFlatList}>
 
-              <View style={{ flexDirection: 'row' }}>
-                <Text>
-                  <Icon name="book-outline" size={15} color="#000" />:{' '}
-                  <Text style={{ fontWeight: 'bold' }}>
-                    {item.title && item.title.length > 35 ? item.title.substring(0, 35) + '...' : item.title}
+                <View style={{ flexDirection: 'row' }}>
+                  <Text>
+                    <Icon name="book-outline" size={15} color="#000" />:{' '}
+                    <Text style={{ fontWeight: 'bold' }}>
+                      {item.title && item.title.length > 35 ? item.title.substring(0, 35) + '...' : item.title}
+                    </Text>
                   </Text>
-                </Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', flex: 1 }}>
-                  <TouchableOpacity onPress={() => openEditModal(item)} disabled={item.status === 1}>
-                    <Icon name="create-outline" size={20} color={item.status === 1 ? 'gray' : '#0D1282'} />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => deleteTask(item.id)} style={{ marginLeft: 10 }} disabled={item.status === 1}>
-                    <Icon name="trash" size={20} color={item.status === 1 ? 'gray' : 'red'} />
-                  </TouchableOpacity>
+                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', flex: 1 }}>
+                    <TouchableOpacity onPress={() => openEditModal(item)} disabled={item.status === 1}>
+                      <Icon name="create-outline" size={20} color={item.status === 1 ? 'gray' : '#0D1282'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => deleteTask(item.id)} style={{ marginLeft: 10 }} disabled={item.status === 1}>
+                      <Icon name="trash" size={20} color={item.status === 1 ? 'gray' : 'red'} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
+                <Text><Icon name="alarm-outline" size={15} color="#000" />: <Text style={{ color: 'red' }}>{item.time && item.time.length > 20 ? item.time.substring(0, 20) + '...' : item.time}, {item.location && item.location.length > 15 ? item.location.substring(0, 15) + '...' : item.location}</Text></Text>
+                <Text><Icon name="person-outline" size={15} color="#000" />: <Text>{item.instructor && item.instructor.length > 35 ? item.instructor.substring(0, 35) + '...' : item.instructor}</Text></Text>
               </View>
-              <Text><Icon name="alarm-outline" size={15} color="#000" />: <Text style={{ color: 'red' }}>{item.time && item.time.length > 20 ? item.time.substring(0, 20) + '...' : item.time}, {item.location && item.location.length > 15 ? item.location.substring(0, 15) + '...' : item.location}</Text></Text>
-              <Text><Icon name="person-outline" size={15} color="#000" />: <Text>{item.instructor && item.instructor.length > 35 ? item.instructor.substring(0, 35) + '...' : item.instructor}</Text></Text>
-            </View>
-          )}
-        />
-
+            )}
+          />
+        </View>
         <Modal visible={isModal2Visible} transparent={true} animationType="slide">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
           <View style={styles.containerModal}>
             <View style={styles.modalContent}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -638,12 +700,12 @@ const Schedule = () => {
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                 <Text style={{ fontWeight: 'bold' }}>Phòng học:</Text>
                 <TextInput style={{ marginLeft: 25, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, location: text }))}
-                  value={newTask.location}/>
+                  value={newTask.location} />
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                 <Text style={{ fontWeight: 'bold' }}>Giảng viên:</Text>
                 <TextInput style={{ marginLeft: 26, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, instructor: text }))}
-                  value={newTask.instructor}/>
+                  value={newTask.instructor} />
               </View>
               {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                 <Text style={{ fontWeight: 'bold' }}>Chọn số tuần:</Text>
@@ -685,8 +747,16 @@ const Schedule = () => {
               </View>
             </View>
           </View>
+          </KeyboardAvoidingView>
+          </TouchableWithoutFeedback>
         </Modal>
+      
       </View>
+      {isLoading ? (
+        <View style={loadPage.loadingContainer}>
+          <ActivityIndicator size="large" color="#2bc250" />
+        </View>) : (<></>)
+      }
     </View>
 
   );
@@ -696,7 +766,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'
   },
   ActivityIndicator: {
-    position: 'absolute', top: '50%', left: '50%', zIndex: 9999
+    position: 'absolute', zIndex: 9999, width: 50, height: 50
   },
   innerContainer: {
     flexDirection: 'row', justifyContent: 'space-between', marginRight: 10, alignItems: 'center'
@@ -704,14 +774,11 @@ const styles = StyleSheet.create({
   font_30: {
     fontSize: 30,
   },
-  activityIndicator: {
-
-  },
   addTask: {
-    color: 'white', fontSize: 20
+    color: 'black', fontSize: 20
   },
   buttonAddTask: {
-    width: 30, borderRadius: 5, marginTop: 5, backgroundColor: 'black', alignItems: 'center', marginLeft: 10
+    width: 32, borderRadius: 5, marginTop: 5, borderWidth: 2, alignItems: 'center'
   },
   textblue_bold: {
     color: 'blue',
@@ -725,8 +792,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white', padding: 20, borderRadius: 10
   },
   dropdown: {
+    marginLeft: 5,
     marginTop: 5,
-    width: '90%',
+    width: '75%',
     height: 40,
     borderWidth: 1,
     borderColor: 'black',
@@ -736,8 +804,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   refreshButton: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
+    fontWeight: 'bold',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -747,7 +816,6 @@ const styles = StyleSheet.create({
   containerFlatList: {
     marginTop: 10,
     width: '100%',
-    height: 66,
     borderWidth: 1,
     borderColor: 'black',
     borderRadius: 10,
@@ -772,9 +840,12 @@ const styles = StyleSheet.create({
   modalAdd: {
 
   },
-  modalEdit: {
-
-  }
+  keyboardAvoidingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 
 });
 
