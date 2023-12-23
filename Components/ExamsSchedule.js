@@ -56,7 +56,7 @@ const ExamsSchedule = () => {
                 renderItem={({ item: exam }) => (
                     <View key={exam.numOrder} style={styles.examItem}>
                         <Text>
-                            <Text style={styles.boldText}>{exam.name}</Text> ({exam.id}){'\n'}
+                            <Text style={styles.nameSubjectStyle}>{exam.name}</Text> ({exam.id}){'\n'}
                             Phòng thi: {exam.examRoom}{'\n'}
                             Ngày thi: {DateToString(exam.testDay)}{'\n'}
                             Tiết BĐ: {exam.lessonStart}{'\n'}
@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
     nameSubjectStyle: {
         fontWeight: 'bold',
         color: colors.primary,
+        fontSize: 17,
     },
     dropdown: {
         marginTop: 5,

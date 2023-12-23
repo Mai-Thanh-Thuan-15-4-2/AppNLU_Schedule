@@ -1,30 +1,54 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import { colors } from '../BaseStyle/Style';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { colors, loadPage } from '../BaseStyle/Style';
+import { sendReport } from '../service/NLUAppApiCaller';
+import Toast from 'react-native-toast-message';
 
 const ReportBug = ({ navigation }) => {
-  const [bugTitle, setBugTitle] = useState('');
   const [bugDescription, setBugDescription] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmitBug = () => {
-    // Thực hiện xử lý báo cáo lỗi ở đây
-    // Gửi thông tin báo cáo lỗi đến server hoặc thực hiện các bước cần thiết
-    // Sau khi xử lý xong, bạn có thể chuyển về màn hình trước đó hoặc màn hình khác
-    navigation.goBack(); // Chuyển về màn hình trước đó
+  const handleSubmitBug = async () => {
+        if(bugDescription.trim() === ''){
+          Toast.show({
+            type: 'info',
+            text1: 'Vui lòng nhập điều bạn muốn nói!!!',
+            visibilityTime: 2000,
+            autoHide: true,
+          });
+          return;
+        }
+        try {
+          setIsLoading(true);
+          const message = await sendReport(bugDescription);
+          
+          Toast.show({
+            type: 'success',
+            text1: message,
+            visibilityTime: 2000,
+            autoHide: true,
+          });
+          setBugDescription('');
+        } catch (error) {
+          Toast.show({
+            type: 'error',
+            text1: 'Có lỗi xảy ra!',
+            text2: message,
+            visibilityTime: 2000,
+            autoHide: true,
+          });
+         
+        }
+        setIsLoading(false);
+        
   };
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.header}>Report Bug</Text> */}
-      {/* <TextInput
-        style={styles.input}
-        placeholder="Bug Title"
-        value={bugTitle}
-        onChangeText={(text) => setBugTitle(text)}
-      /> */}
+  
       <TextInput
         style={[styles.input]}
-        placeholder="Lỗi gì nè??"
+        placeholder="Nhập điều bạn muốn nói :3"
         multiline
         numberOfLines={10}
         value={bugDescription}
@@ -33,6 +57,11 @@ const ReportBug = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleSubmitBug}>
         <Text style={{color: colors.white}}>Gửi</Text>
       </TouchableOpacity>
+      {isLoading ? (
+        <View style={loadPage.loadingContainer}>
+          <ActivityIndicator size="large" color="#2bc250" />
+        </View>) : (<></>)
+      }
     </View>
   );
 };
@@ -40,7 +69,7 @@ const ReportBug = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    marginTop: 20,
     alignItems: 'center',
   },
   header: {
@@ -50,7 +79,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '90%',
-    height: 200,
+    height: 350,
     borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 20,

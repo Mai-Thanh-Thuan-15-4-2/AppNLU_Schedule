@@ -8,7 +8,7 @@ export const colors = {
   success: "#4BB543",
   backgroundColor: '#F5EFE7',
   borderColor: "#0E2954",
-  vip: "#F5EA5A",
+  vip: "#F4CE14",
 };
 
 

@@ -61,7 +61,7 @@ export async function getUser(id) {
 //Send a report to admin
 //return ok message or null if error 
 export async function sendReport(message) {
-    const urlString = "http://103.9.159.203:8001/authenticate/login";
+    const urlString = "http://103.9.159.203:8001/report/send";
     const token = await AsyncStorage.getItem('tokenApp');
     const params = `{"message":"${message}"}`;
 

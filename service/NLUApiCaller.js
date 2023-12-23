@@ -189,7 +189,6 @@ export async function getExams(idSemester) {
     if (response.ok) {
         const res = [];
         const responseData = await response.json();
-        console.log(responseData)
         if(responseData.data.total_items === 0) return [];
         const listExam = responseData.data.ds_lich_thi;
         for (let i = 0; i < listExam.length; i++) {
@@ -206,7 +205,6 @@ export async function getExams(idSemester) {
             const exam = new Exam(numOrder, id, name, testDay, examRoom, lessonStart, numOfLesson, examForm);
             res.push(exam);
         }
-        console.log(res);
         return res;
     }
     return null;
@@ -410,7 +408,6 @@ export async function registerSubject(idSubjectClass) {
 
     if (response.ok) {
         const responseData = await response.json();
-        console.log(responseData)
         const isSuccess = responseData.data.is_thanh_cong;
         if (!isSuccess) return responseData.data.thong_bao_loi;
         const enableDelete = responseData.data.ket_qua_dang_ky.enable_xoa;
@@ -522,7 +519,6 @@ export async function getInfoStudent() {
 
     if (response.ok) {
         const responseData = await response.json();
-        console.log(responseData);
         const code = responseData.code;
 
         if (code == 200) {
