@@ -4,6 +4,7 @@ import { Text, StyleSheet, View, Image, TextInput, BackHandler, TouchableWithout
 import { LoginNLU } from '../service/NLUApiCaller';
 import { LoginApi} from '../service/NLUAppApiCaller';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { colors } from '../BaseStyle/Style.js';
 
 export default function Login({ navigation }) {
     var isBack = false;
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     loginButton: {
-        backgroundColor: "#2196F3",
+        backgroundColor: colors.primary,
         padding: 10,
         marginTop: 10,
         borderRadius: 3,

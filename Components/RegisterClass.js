@@ -9,6 +9,7 @@ import { getUser } from '../service/NLUAppApiCaller';
 import User from '../model/User';
 import SubjectClass from '../model/SubjectClass';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
+import { colors } from '../BaseStyle/Style';
 
 export default function RegisterClass() {
     const [subjectClassAll, setSubjectClassAll] = useState([]);
@@ -515,7 +516,7 @@ const styles = StyleSheet.create({
     startButton: {
         width: '45%',
         borderWidth: 2,
-        borderColor: '#2196F3'
+        borderColor: '#2196F3',
     },
     resultButton: {
         width: '45%',

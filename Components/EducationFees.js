@@ -16,6 +16,7 @@ const EducationFees = () => {
       const data = await getEducationFee();
       if (data.length > 0) {
         setfeesData(data);
+        console.log(data.reverse)
       } else {
         Toast.show({
           type: 'error',
@@ -50,7 +51,7 @@ const EducationFees = () => {
     };
   };
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({ item }) => (
     <ListItem containerStyle={styles.listItem}>
       <ListItem.Content>
         <View style={styles.semesterContainer}>

@@ -9,7 +9,6 @@ const About = () => {
   const navigation = useNavigation();
 
   const handleViewProfile = () => {
-    // Điều hướng đến màn hình xem thông tin tài khoản
     navigation.navigate('Thông tin');
   };
 
@@ -23,8 +22,10 @@ const About = () => {
   };
 
   const handleReportBug = () => {
-    // Điều hướng đến màn hình báo cáo lỗi
     navigation.navigate('Hỗ trợ');
+  };
+  const handleSetting = () => {
+    navigation.navigate('Cài đặt');
   };
 
   return (
@@ -44,6 +45,11 @@ const About = () => {
       <TouchableOpacity style={styles.item} onPress={handleVip}>
         <Icon name="star" style={styles.icon_vip} />
         <Text style={styles.itemText}>VIP Member</Text>
+      </TouchableOpacity>
+      {/* Item Cài đặt */}
+      <TouchableOpacity style={styles.item} onPress={handleSetting}>
+        <Icon name="settings" style={styles.icon} />
+        <Text style={styles.itemText}>Cài đặt</Text>
       </TouchableOpacity>
       {/* Item Đăng xuất */}
       <TouchableOpacity style={styles.item} onPress={handleLogout}>
@@ -73,7 +79,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundColor,
     padding: 16,
     marginTop: 24,
-    marginVertical: 50,
+    marginVertical: 30,
     marginHorizontal: 10,
     borderRadius: 8,
     shadowColor: '#000',

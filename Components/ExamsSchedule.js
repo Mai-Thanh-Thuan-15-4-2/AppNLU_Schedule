@@ -17,16 +17,16 @@ const ExamsSchedule = () => {
     const handleSemesterChange = async (id) => {
         setSelectedIdSemester(id);
         setIsLoading(true);
-    
+
         try {
-          const data = await getExams(id);
-          setExamData(data);
+            const data = await getExams(id);
+            setExamData(data);
         } catch (error) {
-          console.error(error);
-         
+            console.error(error);
+
         }
         setIsLoading(false)
-      };
+    };
     function DateToString(date) {
         // Kiểm tra nếu đối tượng date không phải là đối tượng Date
         if (!(date instanceof Date)) {
@@ -45,9 +45,9 @@ const ExamsSchedule = () => {
     }
     const displayExams = () => {
         if (!examData || examData.length === 0) {
-            return <Text>No exams available</Text>;
-          }
-      
+            return <Text>Không có lịch thi nào ở học kỳ đã chọn!</Text>;
+        }
+
         return (
             <FlatList
                 data={examData}
@@ -55,14 +55,20 @@ const ExamsSchedule = () => {
                 keyExtractor={(exam) => exam.numOrder.toString()}
                 renderItem={({ item: exam }) => (
                     <View key={exam.numOrder} style={styles.examItem}>
-                        <Text>
-                            <Text style={styles.nameSubjectStyle}>{exam.name}</Text> ({exam.id}){'\n'}
-                            Phòng thi: {exam.examRoom}{'\n'}
-                            Ngày thi: {DateToString(exam.testDay)}{'\n'}
-                            Tiết BĐ: {exam.lessonStart}{'\n'}
-                            Số tiết: {exam.numOfLesson}{'\n'}
-                            Hình thức thi: {exam.examForm}{'\n'}
-                        </Text>
+
+                        <Text style={styles.nameSubjectStyle}>{exam.name} - ({exam.id})</Text>
+                        <View style={styles.info_style}>
+                            <View>
+                                <Text>Phòng thi: {exam.examRoom}</Text>
+                               <Text>Ngày thi: {DateToString(exam.testDay)}</Text>
+                            </View>
+                            <View>
+                               <Text>Tiết BĐ: {exam.lessonStart}</Text>
+                                <Text>Số tiết: {exam.numOfLesson}</Text>
+                            </View>
+                        </View>
+                        <Text style={{marginTop: 12}}>Hình thức thi: {exam.examForm}</Text>
+
                     </View>
                 )}
             />
@@ -84,7 +90,7 @@ const ExamsSchedule = () => {
                 }));
                 setlistSemester(formattedListSemester);
             } catch (error) {
-               
+
             }
         };
 
@@ -131,6 +137,11 @@ const styles = StyleSheet.create({
     },
     container_ses: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'
+    },
+    info_style: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 12,
     },
     examList: {
         marginTop: 15,
