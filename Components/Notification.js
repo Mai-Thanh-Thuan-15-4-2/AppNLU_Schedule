@@ -29,7 +29,7 @@ class Notification extends Component {
   isNewNotification = (uploadDate) => {
     const currentTime = new Date();
     const uploadTime = new Date(uploadDate);
-    return (currentTime - uploadTime) < 24 * 60 * 60 * 1000; // 24 giờ
+    return (currentTime - uploadTime) < 24 * 60 * 60 * 1000;
   };
 
   handlePress = (id) => {
@@ -52,7 +52,7 @@ renderItem = ({ item }) => (
       {item.isNew && <Text style={styles.newLabel}>New</Text>}
     </Text>
     <View style={styles.uploadTime}>
-      <Text style={{fontWeight: 'bold'}}>Ngày đăng: </Text>
+      <Text style={{fontWeight: '400', fontSize: 13}}>Ngày đăng: </Text>
       <Text style={styles.dateText}>{this.formatDate(item.uploadDate)}</Text>
      
     </View>

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, Dimensions, FlatList, View, Text, TextInput, Modal, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {PanResponder, TouchableWithoutFeedback, KeyboardAvoidingView, TouchableOpacity, Dimensions, FlatList, View, Text, TextInput, Modal, ActivityIndicator, StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment/min/moment-with-locales';
@@ -203,7 +203,6 @@ const Schedule = () => {
   };
 
 
-
   const generateMarkedDates = (tasks) => {
     const markedDates = {};
     const today = moment().format('YYYY-MM-DD');
@@ -358,11 +357,10 @@ const Schedule = () => {
           },
         });
         setCurrentDay(formattedStartDate);
-        
       }
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [selectedValue, semesters]);
+  }, [selectedValue, semesters, isLoading]);
   
   const uniqueTasks = (tasks) => {
     const seen = new Set();
@@ -495,6 +493,38 @@ const Schedule = () => {
   const windowHeight = Dimensions.get('window').height;
   const bottomTabHeight = 60;
   const flatListHeight = windowHeight * 0.35 - bottomTabHeight;
+
+  const [swipeCount, setSwipeCount] = useState(0);
+
+  const handleSwipeRight = () => {
+    setSwipeCount(prevCount => prevCount - 1);
+  };
+  
+  const handleSwipeLeft = () => {
+    setSwipeCount(prevCount => prevCount + 1);
+  };
+  
+  useEffect(() => {
+    const updatedDate = moment().add(swipeCount, 'months').format('YYYY-MM-DD');
+    setCurrentDay(updatedDate);
+  }, [swipeCount]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, gestureState) => {
+        if (gestureState.dx > 50) {
+          handleSwipeRight();
+        } else if (gestureState.dx < -50) {
+          handleSwipeLeft();
+        }
+      },
+    })
+  ).current;
+  const closeModalAndDismissKeyboard = () => {
+    Keyboard.dismiss(); 
+    setShowModal(false);
+  };
   return (
     <View style={{ flex: 1 }}>
       {isLoading && (
@@ -506,9 +536,6 @@ const Schedule = () => {
         paddingHorizontal: 10,
       }}>
         <View style={styles.container}>
-          <TouchableOpacity style={styles.buttonAddTask} onPress={() => setShowModal(true)}>
-            <Text style={styles.addTask}>+</Text>
-          </TouchableOpacity>
           <Dropdown
             style={styles.dropdown}
             data={data}
@@ -530,12 +557,16 @@ const Schedule = () => {
             style={styles.refreshButton}
             onPress={reloadPage}
           >
-            <Icon name="ios-refresh" size={24} color="black" />
+            <Icon name="ios-refresh" size={30} style={{marginTop: 5}} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonAddTask} onPress={() => setShowModal(true)}>
+            <Text style={styles.addTask}>+</Text>
           </TouchableOpacity>
         </View>
-
+        <View {...panResponder.panHandlers}>
         <Calendar
           key={currentDay}
+          // ref={calendarRef}
           style={styles.calendar}
           markingType='custom'
           markedDates={{ ...markedDates, ...selectedDate }}
@@ -556,11 +587,13 @@ const Schedule = () => {
             },
           }}
         />
+        </View>
         <View style={styles.innerContainer}>
           <Text style={styles.marginRT_5 + styles.font_30}>Tổng số: <Text style={styles.textblue_bold}>{totalTasksForCurrentDay}</Text></Text>
         </View>
-
+        <TouchableWithoutFeedback onPress={closeModalAndDismissKeyboard}>
         <Modal visible={showModal} transparent={true} animationType="slide">
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
           <View style={styles.containerModal}>
             <View style={styles.modalContent}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -613,7 +646,9 @@ const Schedule = () => {
               </View>
             </View>
           </View>
+          </KeyboardAvoidingView>
         </Modal>
+        </TouchableWithoutFeedback>
         <View style={{ height: flatListHeight }}>
           <FlatList
             data={uniqueTasks(tasks[currentDay] ?? [])}
@@ -644,6 +679,7 @@ const Schedule = () => {
           />
         </View>
         <Modal visible={isModal2Visible} transparent={true} animationType="slide">
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
           <View style={styles.containerModal}>
             <View style={styles.modalContent}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -709,6 +745,7 @@ const Schedule = () => {
               </View>
             </View>
           </View>
+          </KeyboardAvoidingView>
         </Modal>
       </View>
       {isLoading ? (
@@ -737,7 +774,7 @@ const styles = StyleSheet.create({
     color: 'black', fontSize: 20
   },
   buttonAddTask: {
-    width: 32, borderRadius: 5, marginTop: 5, borderWidth: 2, alignItems: 'center', marginLeft: 10
+    width: 32, borderRadius: 5, marginTop: 5, borderWidth: 2, alignItems: 'center'
   },
   textblue_bold: {
     color: 'blue',
@@ -799,9 +836,12 @@ const styles = StyleSheet.create({
   modalAdd: {
 
   },
-  modalEdit: {
-
-  }
+  keyboardAvoidingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 
 });
 
