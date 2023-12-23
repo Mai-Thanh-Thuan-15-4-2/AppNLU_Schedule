@@ -161,7 +161,7 @@ export async function getSchedule(idSemester) {
               res.push(subject);
           }
           return res;
-      
+          
         } else {
           return null;
         }
