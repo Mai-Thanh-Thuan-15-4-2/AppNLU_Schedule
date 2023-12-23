@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, ActivityIndicator, Animated, Easing } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Animated, Easing, KeyboardAvoidingView, Platform } from 'react-native';
 import { colors, loadPage } from '../BaseStyle/Style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUser } from '../service/NLUAppApiCaller';
@@ -9,8 +9,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { Text } from 'react-native-elements';
 
+let questions = [];
 const API_URL = 'https://api.openai.com/v1/chat/completions';
-const sendToGPT = async (message) => {
+const sendToGPT = async (messages) => {
     const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
@@ -19,20 +20,21 @@ const sendToGPT = async (message) => {
         },
         body: JSON.stringify({
             model: 'gpt-3.5-turbo',
-            messages: [{
-                role: 'user',
-                content: message
-            }],
+            messages: getMessages(messages),
         }),
     });
     const data = await response.json();
-
     if (data) {
+        if (data.error) return "Lỗi rồi!!!";
         const value = data?.choices[0]?.message?.content;
         return value;
     }
     return "Lỗi rồi!!!";
 };
+
+const getMessages = (messages) => {
+    return messages.map((item) => ({ role: 'user', content: item }))
+}
 
 const ChatGPT = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -100,9 +102,11 @@ const ChatGPT = () => {
         setInputText(inputText.trim());
         if (inputText !== '') {
             addMessages(inputText);
+            addQuestions(inputText);
+            console.log(questions)
             setIsAnwsering(true);
             typingAnimation.start()
-            sendToGPT(inputText).then(response => {
+            sendToGPT(questions).then(response => {
                 setIsAnwsering(false);
                 typingAnimation.stop()
                 addMessages(response)
@@ -116,25 +120,31 @@ const ChatGPT = () => {
         setMessages(oldMesages => [...oldMesages, newMessage]);
     }
 
+    const addQuestions = (newQuestion) => {
+        questions.push(newQuestion);
+    }
+
     return (
         <>{user.isVip ? (
-            <View style={styles.container}>
-                <FlatList data={messages} keyExtractor={(item, index) => index.toString()} renderItem={messageItem} />
-                {isAnwsering ? (
-                    <View style={[styles.anwserMessage, styles.message, { flexDirection: 'row' }]}>
-                        <Animated.Text style={[styles.dot, { opacity: dot1Opacity }]}>.</Animated.Text>
-                        <Animated.Text style={[styles.dot, { opacity: dot2Opacity }]}>.</Animated.Text>
-                        <Animated.Text style={[styles.dot, { opacity: dot3Opacity }]}>.</Animated.Text>
-                    </View>) : (<></>)}
-                <View style={styles.inputArea}>
-                    <View style={styles.inputContainer}>
-                        <TextInput style={styles.input} placeholder='Viết gì đó ...' multiline={true} value={inputText} onChangeText={text => setInputText(text)} />
-                        <TouchableOpacity style={styles.submitButton} onPress={sendQuestion}>
-                            <Icon style={{ color: 'white', }} name="send" size={20} />
-                        </TouchableOpacity>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'height' : ''} style={{ flex: 1 }} keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}>
+                <View style={styles.container}>
+                    <FlatList data={messages} keyExtractor={(item, index) => index.toString()} renderItem={messageItem} />
+                    {isAnwsering ? (
+                        <View style={[styles.anwserMessage, styles.message, { flexDirection: 'row' }]}>
+                            <Animated.Text style={[styles.dot, { opacity: dot1Opacity }]}>.</Animated.Text>
+                            <Animated.Text style={[styles.dot, { opacity: dot2Opacity }]}>.</Animated.Text>
+                            <Animated.Text style={[styles.dot, { opacity: dot3Opacity }]}>.</Animated.Text>
+                        </View>) : (<></>)}
+                    <View style={styles.inputArea}>
+                        <View style={styles.inputContainer}>
+                            <TextInput style={styles.input} placeholder='Viết gì đó ...' multiline={true} value={inputText} onChangeText={text => setInputText(text)} />
+                            <TouchableOpacity style={styles.submitButton} onPress={sendQuestion}>
+                                <Icon style={{ color: 'white', }} name="send" size={20} />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
-            </View>) : (
+            </KeyboardAvoidingView>) : (
             <View style={{ alignItems: 'center', height: '100%', justifyContent: 'center' }}>
                 <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Chức năng chỉ dành cho VIP</Text>
                 <Text style={{ fontSize: 15, color: 'gray' }}>Nạp lần đầu đi bạn eiii</Text>
@@ -158,26 +168,37 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     inputArea: {
-        paddingBottom: 10,
+        paddingBottom: 20,
     },
     inputContainer: {
         flexDirection: 'row',
+        minHeight: 'auto',
         borderWidth: 1,
         borderColor: '#bebebe',
         borderRadius: 10,
         backgroundColor: colors.white,
+        justifyContent: 'center',
+        ...Platform.select({
+            ios: {
+                paddingVertical: 2,
+            },
+            
+        }),
     },
     input: {
         flex: 9,
         paddingHorizontal: 10,
-        paddingVertical: 5
+        textAlignVertical: 'center',
+        paddingVertical: 5,
     },
     submitButton: {
         flex: 1,
         backgroundColor: '#19c37d',
         margin: 3,
         justifyContent: 'center',
+        alignItems: 'center',
         paddingHorizontal: 8,
+        paddingVertical: 5,
         borderRadius: 8,
     },
     message: {
