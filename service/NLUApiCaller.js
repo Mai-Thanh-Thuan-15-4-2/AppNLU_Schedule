@@ -159,7 +159,7 @@ export async function getSchedule(idSemester) {
               res.push(subject);
           }
           return res;
-      
+          
         } else {
           return null;
         }
@@ -206,7 +206,6 @@ export async function getExams(idSemester) {
             const exam = new Exam(numOrder, id, name, testDay, examRoom, lessonStart, numOfLesson, examForm);
             res.push(exam);
         }
-        console.log(res);
         return res;
     }
     return null;

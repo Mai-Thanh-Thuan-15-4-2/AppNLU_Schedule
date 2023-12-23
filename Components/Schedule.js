@@ -492,7 +492,7 @@ const Schedule = () => {
   };
   const windowHeight = Dimensions.get('window').height;
   const bottomTabHeight = 60;
-  const flatListHeight = windowHeight * 0.35 - bottomTabHeight;
+  const flatListHeight = windowHeight * 0.4 - bottomTabHeight;
 
   const [swipeCount, setSwipeCount] = useState(0);
 
@@ -588,9 +588,9 @@ const Schedule = () => {
           }}
         />
         </View>
-        <View style={styles.innerContainer}>
+        {/* <View style={styles.innerContainer}>
           <Text style={styles.marginRT_5 + styles.font_30}>Tổng số: <Text style={styles.textblue_bold}>{totalTasksForCurrentDay}</Text></Text>
-        </View>
+        </View> */}
         <Modal visible={showModal} transparent={true} animationType="slide">
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
@@ -600,7 +600,8 @@ const Schedule = () => {
                 <Text style={{ fontWeight: 'bold', color: 'green', alignItems: 'center', justifyContent: 'center' }}>THÊM LỊCH HỌC</Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
-                <Text style={{ fontWeight: 'bold' }}>Tên môn học:{isTitleEmpty && <Text style={{ color: 'red' }}>*</Text>}</Text>
+              {/* {isTitleEmpty && <Text style={{ color: 'red' }}>*</Text>} */}
+                <Text style={{ fontWeight: 'bold' }}>Tên môn học:</Text>
                 <TextInput style={{ marginLeft: 10, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={handleTitleChange} />
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
@@ -688,7 +689,8 @@ const Schedule = () => {
                 <Text style={{ fontWeight: 'bold', color: 'green', alignItems: 'center', justifyContent: 'center' }}>SỬA LỊCH HỌC</Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
-                <Text style={{ fontWeight: 'bold' }}>Tên môn học: {isTitleUpdateEmpty && <Text style={{ color: 'red' }}>*</Text>}</Text>
+             {/* {isTitleUpdateEmpty && <Text style={{ color: 'red' }}>*</Text>} */}
+                <Text style={{ fontWeight: 'bold' }}>Tên môn học: </Text>
                 <TextInput style={{ marginLeft: 10, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={handleTitleUpdateChange}
                   value={newTask.title} />
               </View>
