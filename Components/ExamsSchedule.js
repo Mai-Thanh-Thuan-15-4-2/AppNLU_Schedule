@@ -6,13 +6,16 @@ import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 
 import { getExams, getSemesters } from '../service/NLUApiCaller';
 import { loadPage, colors } from '../BaseStyle/Style';
+import moment from 'moment/min/moment-with-locales';
 
 const ExamsSchedule = () => {
     const [listSemester, setlistSemester] = useState([]);
     const [examData, setExamData] = useState([]);
     const [selectedIdSemester, setSelectedIdSemester] = useState(null);
-
+    const [currentSemester, setCurrentSemester] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+
+
 
     const handleSemesterChange = async (id) => {
         setSelectedIdSemester(id);
@@ -60,35 +63,48 @@ const ExamsSchedule = () => {
                         <View style={styles.info_style}>
                             <View>
                                 <Text>Phòng thi: {exam.examRoom}</Text>
-                               <Text>Ngày thi: {DateToString(exam.testDay)}</Text>
+                                <Text>Ngày thi: {DateToString(exam.testDay)}</Text>
                             </View>
                             <View>
-                               <Text>Tiết BĐ: {exam.lessonStart}</Text>
+                                <Text>Tiết BĐ: {exam.lessonStart}</Text>
                                 <Text>Số tiết: {exam.numOfLesson}</Text>
                             </View>
                         </View>
-                        <Text style={{marginTop: 12}}>Hình thức thi: {exam.examForm}</Text>
+                        <Text style={{ marginTop: 12 }}>Hình thức thi: {exam.examForm}</Text>
 
                     </View>
                 )}
             />
         );
     };
-    const reloadPage = async () => {
-        console.log("lịch thi theo học kỳ")
-    };
+
 
     /* Dropdown */
     useEffect(() => {
         const fetchSemesters = async () => {
             try {
                 const semesters = await getSemesters();
-
+                console.log(semesters);
                 const formattedListSemester = semesters.map(semester => ({
                     label: `${semester.name}`,
                     value: semester.id,
                 }));
+                // Find the current semester based on the start and end dates
+                const now = moment();
+                const currentSem = semesters.find(semester => {
+                    return now.isBetween(moment(semester.startDate), moment(semester.endDate));
+                });
+
+                if (currentSem) {
+                    setCurrentSemester(currentSem.id);
+                    setSelectedIdSemester(currentSem.id);
+                }
                 setlistSemester(formattedListSemester);
+                setIsLoading(true)
+                const data = await getExams(currentSem.id);
+                setExamData(data);
+                setIsLoading(false)
+
             } catch (error) {
 
             }
@@ -96,6 +112,8 @@ const ExamsSchedule = () => {
 
         fetchSemesters();
     }, []);
+
+
 
     return (
         <View style={styles.container}>
@@ -109,12 +127,7 @@ const ExamsSchedule = () => {
                     value={selectedIdSemester}
                     onChange={(item) => handleSemesterChange(item.value)}
                 />
-                <TouchableOpacity
-                    style={styles.refreshButton}
-                    onPress={reloadPage}
-                >
-                    <Icon name="ios-refresh" size={24} color="black" />
-                </TouchableOpacity>
+
             </View>
 
 
@@ -162,18 +175,12 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         marginTop: 5,
-        width: '90%',
+        width: '100%',
         height: 40,
         borderWidth: 1,
         borderColor: 'black',
         borderRadius: 10,
         paddingHorizontal: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    refreshButton: {
-        width: 40,
-        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
     },

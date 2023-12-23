@@ -80,6 +80,7 @@ export async function LoginNLU(username, password) {
 //Get list of semester
 //return a list of semester or null if error
 export async function getSemesters() {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/sch/w-locdshockytkbuser";
     const token = await AsyncStorage.getItem('token');
     const params = "{\"filter\":{\"is_tieng_anh\":null},\"additional\":{\"paging\":{\"limit\":100,\"page\":1},\"ordering\":[{\"name\":\"hoc_ky\",\"order_type\":1}]}}";
@@ -115,6 +116,7 @@ export async function getSemesters() {
 //Get list of subject in a semester
 //return a list of subject in a semester or null if error
 export async function getSchedule(idSemester) {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/sch/w-locdstkbhockytheodoituong";
     const token = await AsyncStorage.getItem('token');
     const params = JSON.stringify({
@@ -173,6 +175,7 @@ export async function getSchedule(idSemester) {
 //Get list of test day in a semester
 //return a list of test day in a semester or null if error
 export async function getExams(idSemester) {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/epm/w-locdslichthisvtheohocky";
     const token = await AsyncStorage.getItem('token');
     const params = "{\"filter\":{\"hoc_ky\":" + idSemester + "},\"additional\":{\"paging\":{\"limit\":100,\"page\":1},\"ordering\":[{\"name\":null,\"order_type\":null}]}}";
@@ -213,6 +216,7 @@ export async function getExams(idSemester) {
 //Get score board for all semester
 //return a list of score board or null if error
 export async function getScoreBoard() {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/srm/w-locdsdiemsinhvien";
     const token = await AsyncStorage.getItem('token');
     const params = "";
@@ -275,6 +279,7 @@ export async function getScoreBoard() {
 //get list of notification
 //return list of notification or null if error
 export async function getNotifications() {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/web/w-locdsbaiviet";
     const params = '{"filter":{"ky_hieu":"tb","is_hien_thi":true,"is_hinh_dai_dien":true,"so_luong_hinh_dai_dien":1},"additional":{"paging":{"limit":500,"page":1},"ordering":[{"name":"do_uu_tien","order_type":1},{"name":"ngay_dang_tin","order_type":1}]}}';
 
@@ -308,6 +313,7 @@ export async function getNotifications() {
 //get content of a notification by id
 //return notification object with content or null if error
 export async function getNotification(idNotification) {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/web/w-locdsbaiviet";
     const params = '{"filter":{"id":"' + idNotification + '","is_noi_dung":true,"is_hinh_dai_dien":false,"is_quyen_xem":false,"is_hien_thi":true,"so_luong_hinh_dai_dien":1},"additional":{"paging":{"limit":1,"page":1,"isLimit":false},"ordering":[{"name":null,"order_type":null}]}}';
 
@@ -342,6 +348,7 @@ export async function getNotification(idNotification) {
 //Get list of subject class in this semester
 //return a list of subject class in this semester or null if error
 export async function getSubjectClass() {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locdsnhomto";
     const token = await AsyncStorage.getItem('token');
     const params = "{'is_CVHT':false,'additional':{'paging':{'limit':10000,'page':1},'ordering':[{'name':'','order_type':''}]}}";
@@ -393,6 +400,7 @@ export async function getSubjectClass() {
 //let register a subject class. if subject is registered, you will cancel register this subject
 //return ok message if success, error message if not success, null if error
 export async function registerSubject(idSubjectClass) {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-xulydkmhsinhvien";
     const token = await AsyncStorage.getItem('token');
     const params = "{'filter':{'id_to_hoc':'" + idSubjectClass + "','is_checked':true,'sv_nganh':1}}";
@@ -421,6 +429,7 @@ export async function registerSubject(idSubjectClass) {
 //Get list of register result 
 //return a list of register result or null if error
 export async function getResultRegister() {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locdskqdkmhsinhvien";
     const token = await AsyncStorage.getItem('token');
     const params = '{"is_CVHT":false,"is_Clear":false}';
@@ -463,6 +472,7 @@ export async function getResultRegister() {
 
 
 export async function getEducationFee() {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/rms/w-locdstonghophocphisv";
     const token = await AsyncStorage.getItem('token');
     const params = '';
@@ -504,6 +514,7 @@ export async function getEducationFee() {
 
 
 export async function getInfoStudent() {
+    
     const urlString = "https://dkmh.hcmuaf.edu.vn/api/dkmh/w-locsinhvieninfo";
     const token = await AsyncStorage.getItem('token');
     const params = '';
