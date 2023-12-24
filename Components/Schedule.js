@@ -367,28 +367,16 @@ const Schedule = () => {
     fetchSemesters();
   }, []);
   // Xem lịch theo học kỳ
- // Xác định học kỳ gần nhất nếu ngày hiện tại không nằm trong bất kỳ học kỳ nào
-const findNearestSemester = (now, semesters) => {
-  // Sắp xếp các học kỳ theo `endDate` tăng dần
-  const sortedSemesters = semesters.sort((a, b) => moment(a.endDate).diff(moment(b.endDate)));
-
-  // Tìm học kỳ có `endDate` gần nhất với ngày hiện tại
-  const nearestSemester = sortedSemesters.find(semester => now.isSameOrBefore(moment(semester.endDate)));
-
-  return nearestSemester;
-};
-
-// Trong useEffect:
+// Xem lịch theo học kỳ
 useEffect(() => {
   setIsLoading(true);
-
   const selectedSemester = semesters.find(semester => semester.id === selectedValue);
-
   if (selectedSemester && selectedSemester.startDate && selectedSemester.endDate) {
     const now = moment();
     const startDate = moment(selectedSemester.startDate);
     const endDate = moment(selectedSemester.endDate);
 
+    // Check if the current date is within the selected semester
     if (now.isBetween(startDate, endDate, undefined, '[]')) {
       setCurrentDay(now.format('20YY-MM-DD'));
       setSelectedDate({
@@ -398,18 +386,14 @@ useEffect(() => {
         },
       });
     } else {
-      const nearestSemester = findNearestSemester(now, semesters);
-
-      if (nearestSemester) {
-        const formattedStartDate = moment(nearestSemester.startDate).format('20YY-MM-DD');
-        setSelectedDate({
-          [formattedStartDate]: {
-            selected: true,
-            selectedColor: '#0D1282',
-          },
-        });
-        setCurrentDay(formattedStartDate);
-      }
+      const formattedStartDate = startDate.format('20YY-MM-DD');
+      setSelectedDate({
+        [formattedStartDate]: {
+          selected: true,
+          selectedColor: '#0D1282',
+        },
+      });
+      setCurrentDay(formattedStartDate);
     }
     setIsLoading(false);
   }

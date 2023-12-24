@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { getNotifications } from '../service/NLUApiCaller';
 
+
 class Notification extends Component {
   constructor(props) {
     super(props);
