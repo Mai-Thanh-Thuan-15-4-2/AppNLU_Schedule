@@ -426,6 +426,7 @@ useEffect(() => {
       return true;
     });
   };
+
   const markedDates = generateMarkedDates(tasks);
   const totalTasksForCurrentDay = uniqueTasks(tasks[currentDay] ?? []).length;
 
@@ -487,6 +488,7 @@ useEffect(() => {
     setIsTitleUpdateEmpty(!text.trim());
   };
 
+
   const onDayPress = async (day) => {
     setSelectedDate({
       [day.dateString]: {
@@ -511,23 +513,49 @@ useEffect(() => {
           const currentWeek = startDate.week();
           const endWeek = endDate.week();
 
-          for (let week = currentWeek; week <= endWeek; week++) {
-            const markedDate = startDate.clone().week(week).day(dayOfWeek);
-            const formattedDate = markedDate.format('20YY-MM-DD');
+          // console.log(subject + 'sub')
+          // console.log(moment(startDate) + 'str')
+          // console.log(currentWeek + 'currW')
+          // console.log(endWeek + 'endW')
+          if (currentWeek > endWeek) {
+            let temp = startDate;
+            while (temp.isSameOrBefore(endDate)) {
 
-            if (!tasksByDate[formattedDate]) {
-              tasksByDate[formattedDate] = [];
+              const formattedDate = temp.format('20YY-MM-DD');
+              if (!tasksByDate[formattedDate]) {
+                tasksByDate[formattedDate] = [];
+              }
+
+              tasksByDate[formattedDate].push({
+                id: subject.id,
+                title: subject.name,
+                time: `Tiết ${subject.lessonStart} - ${subject.lessonStart + subject.numOfLesson - 1}`,
+                location: subject.classroom,
+                instructor: `GV: ${subject.teacher}`,
+                status: 1
+              });
+              temp = temp.add(7, 'days');
+
             }
+          } else
+            for (let week = currentWeek; week <= endWeek; week++) {
 
-            tasksByDate[formattedDate].push({
-              id: subject.id,
-              title: subject.name,
-              time: `Tiết ${subject.lessonStart} - ${subject.lessonStart + subject.numOfLesson - 1}`,
-              location: subject.classroom,
-              instructor: `GV: ${subject.teacher}`,
-              status: 1
-            });
-          }
+              const markedDate = startDate.clone().week(week).day(dayOfWeek);
+              const formattedDate = markedDate.format('YYYY-MM-DD');
+
+              if (!tasksByDate[formattedDate]) {
+                tasksByDate[formattedDate] = [];
+              }
+
+              tasksByDate[formattedDate].push({
+                id: subject.id,
+                title: subject.name,
+                time: `Tiết ${subject.lessonStart} - ${subject.lessonStart + subject.numOfLesson - 1}`,
+                location: subject.classroom,
+                instructor: `GV: ${subject.teacher}`,
+                status: 1
+              });
+            }
         });
       }
 
@@ -550,6 +578,7 @@ useEffect(() => {
   const [swipeCount, setSwipeCount] = useState(0);
 
   const handleSwipeRight = () => {
+    console.log(currentDay +"=====")
     setSwipeCount(prevCount => prevCount - 1);
   };
 
@@ -558,8 +587,10 @@ useEffect(() => {
   };
 
   useEffect(() => {
-    const updatedDate = moment().add(swipeCount, 'months').format('20YY-MM-DD');
+    const updatedDate = moment().add(swipeCount, 'months').format('YYYY-MM-DD');
+    console.log(swipeCount)
     setCurrentDay(updatedDate);
+    console.log(currentDay)
   }, [swipeCount]);
 
   const panResponder = useRef(
