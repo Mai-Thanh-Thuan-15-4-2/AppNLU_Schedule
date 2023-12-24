@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {Keyboard, PanResponder, TouchableWithoutFeedback, KeyboardAvoidingView, TouchableOpacity, Dimensions, FlatList, View, Text, TextInput, Modal, ActivityIndicator, StyleSheet } from 'react-native';
+import { Keyboard, PanResponder, TouchableWithoutFeedback, KeyboardAvoidingView, TouchableOpacity, Dimensions, FlatList, View, Text, TextInput, Modal, ActivityIndicator, StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment/min/moment-with-locales';
@@ -246,18 +246,18 @@ const Schedule = () => {
           label: `${semester.name}`,
           value: semester.id,
         }));
-  
+
         // Find the current semester based on the start and end dates
         const now = moment();
         const currentSem = semesters.find(semester => {
           return now.isBetween(moment(semester.startDate), moment(semester.endDate));
         });
-  
+
         if (currentSem) {
           setCurrentSemester(currentSem.id);
           setSelectedValue(currentSem.id);
         }
-  
+
         setData(formattedData);
       } catch (error) {
         Toast.show({
@@ -269,7 +269,7 @@ const Schedule = () => {
         });
       }
     };
-  
+
     fetchSemesters();
   }, []);
   /* calendar */
@@ -330,7 +330,7 @@ const Schedule = () => {
 
     fetchSemesters();
   }, []);
-// Xem lịch theo học kỳ
+  // Xem lịch theo học kỳ
   useEffect(() => {
     setIsLoading(true);
     const selectedSemester = semesters.find(semester => semester.id === selectedValue);
@@ -338,7 +338,7 @@ const Schedule = () => {
       const now = moment();
       const startDate = moment(selectedSemester.startDate);
       const endDate = moment(selectedSemester.endDate);
-  
+
       // Check if the current date is within the selected semester
       if (now.isBetween(startDate, endDate, undefined, '[]')) {
         setCurrentDay(now.format('20YY-MM-DD'));
@@ -361,7 +361,7 @@ const Schedule = () => {
       setIsLoading(false);
     }
   }, [selectedValue, semesters, isLoading]);
-  
+
   const uniqueTasks = (tasks) => {
     const seen = new Set();
     return tasks.filter(task => {
@@ -373,6 +373,7 @@ const Schedule = () => {
       return true;
     });
   };
+
   const markedDates = generateMarkedDates(tasks);
   const totalTasksForCurrentDay = uniqueTasks(tasks[currentDay] ?? []).length;
 
@@ -434,6 +435,7 @@ const Schedule = () => {
     setIsTitleUpdateEmpty(!text.trim());
   };
 
+
   const onDayPress = async (day) => {
     setSelectedDate({
       [day.dateString]: {
@@ -458,23 +460,49 @@ const Schedule = () => {
           const currentWeek = startDate.week();
           const endWeek = endDate.week();
 
-          for (let week = currentWeek; week <= endWeek; week++) {
-            const markedDate = startDate.clone().week(week).day(dayOfWeek);
-            const formattedDate = markedDate.format('YYYY-MM-DD');
+          // console.log(subject + 'sub')
+          // console.log(moment(startDate) + 'str')
+          // console.log(currentWeek + 'currW')
+          // console.log(endWeek + 'endW')
+          if (currentWeek > endWeek) {
+            let temp = startDate;
+            while (temp.isSameOrBefore(endDate)) {
 
-            if (!tasksByDate[formattedDate]) {
-              tasksByDate[formattedDate] = [];
+              const formattedDate = temp.format('20YY-MM-DD');
+              if (!tasksByDate[formattedDate]) {
+                tasksByDate[formattedDate] = [];
+              }
+
+              tasksByDate[formattedDate].push({
+                id: subject.id,
+                title: subject.name,
+                time: `Tiết ${subject.lessonStart} - ${subject.lessonStart + subject.numOfLesson - 1}`,
+                location: subject.classroom,
+                instructor: `GV: ${subject.teacher}`,
+                status: 1
+              });
+              temp = temp.add(7, 'days');
+
             }
+          } else
+            for (let week = currentWeek; week <= endWeek; week++) {
 
-            tasksByDate[formattedDate].push({
-              id: subject.id,
-              title: subject.name,
-              time: `Tiết ${subject.lessonStart} - ${subject.lessonStart + subject.numOfLesson - 1}`,
-              location: subject.classroom,
-              instructor: `GV: ${subject.teacher}`,
-              status: 1
-            });
-          }
+              const markedDate = startDate.clone().week(week).day(dayOfWeek);
+              const formattedDate = markedDate.format('YYYY-MM-DD');
+
+              if (!tasksByDate[formattedDate]) {
+                tasksByDate[formattedDate] = [];
+              }
+
+              tasksByDate[formattedDate].push({
+                id: subject.id,
+                title: subject.name,
+                time: `Tiết ${subject.lessonStart} - ${subject.lessonStart + subject.numOfLesson - 1}`,
+                location: subject.classroom,
+                instructor: `GV: ${subject.teacher}`,
+                status: 1
+              });
+            }
         });
       }
 
@@ -497,16 +525,19 @@ const Schedule = () => {
   const [swipeCount, setSwipeCount] = useState(0);
 
   const handleSwipeRight = () => {
+    console.log(currentDay +"=====")
     setSwipeCount(prevCount => prevCount - 1);
   };
-  
+
   const handleSwipeLeft = () => {
     setSwipeCount(prevCount => prevCount + 1);
   };
-  
+
   useEffect(() => {
     const updatedDate = moment().add(swipeCount, 'months').format('YYYY-MM-DD');
+    console.log(swipeCount)
     setCurrentDay(updatedDate);
+    console.log(currentDay)
   }, [swipeCount]);
 
   const panResponder = useRef(
@@ -522,14 +553,14 @@ const Schedule = () => {
     })
   ).current;
   const closeModalAndDismissKeyboard = () => {
-    Keyboard.dismiss(); 
+    Keyboard.dismiss();
     setShowModal(false);
   };
   return (
     <View style={{ flex: 1 }}>
       {isLoading && (
         <View style={loadPage.loadingContainer}>
-        <ActivityIndicator size="large" color="#2bc250" />
+          <ActivityIndicator size="large" color="#2bc250" />
         </View>
       )}
       <View style={{
@@ -557,100 +588,100 @@ const Schedule = () => {
             style={styles.refreshButton}
             onPress={reloadPage}
           >
-            <Icon name="ios-refresh" size={30} style={{marginTop: 5}} color="black" />
+            <Icon name="ios-refresh" size={30} style={{ marginTop: 5 }} color="black" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonAddTask} onPress={() => setShowModal(true)}>
             <Text style={styles.addTask}>+</Text>
           </TouchableOpacity>
         </View>
         <View {...panResponder.panHandlers}>
-        <Calendar
-          key={currentDay}
-          // ref={calendarRef}
-          style={styles.calendar}
-          markingType='custom'
-          markedDates={{ ...markedDates, ...selectedDate }}
-          current={currentDay}
-          onDayPress={onDayPress}
-          hideExtraDays
-          theme={{
-            'stylesheet.calendar.main': {
-              dayToday: {
-                borderWidth: 2,
+          <Calendar
+            key={currentDay}
+            // ref={calendarRef}
+            style={styles.calendar}
+            markingType='custom'
+            markedDates={{ ...markedDates, ...selectedDate }}
+            current={currentDay}
+            onDayPress={onDayPress}
+            hideExtraDays
+            theme={{
+              'stylesheet.calendar.main': {
+                dayToday: {
+                  borderWidth: 2,
+                },
               },
-            },
-            'stylesheet.day.basic': {
-              sunday: {
-                color: 'red',
-                fontWeight: 'bold',
+              'stylesheet.day.basic': {
+                sunday: {
+                  color: 'red',
+                  fontWeight: 'bold',
+                },
               },
-            },
-          }}
-        />
+            }}
+          />
         </View>
         {/* <View style={styles.innerContainer}>
           <Text style={styles.marginRT_5 + styles.font_30}>Tổng số: <Text style={styles.textblue_bold}>{totalTasksForCurrentDay}</Text></Text>
         </View> */}
         <Modal visible={showModal} transparent={true} animationType="slide">
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
-          <View style={styles.containerModal}>
-            <View style={styles.modalContent}>
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontWeight: 'bold', color: 'green', alignItems: 'center', justifyContent: 'center' }}>THÊM LỊCH HỌC</Text>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
-              {/* {isTitleEmpty && <Text style={{ color: 'red' }}>*</Text>} */}
-                <Text style={{ fontWeight: 'bold' }}>Tên môn học:</Text>
-                <TextInput style={{ marginLeft: 10, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={handleTitleChange} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                <Text style={{ fontWeight: 'bold' }}>Thời gian:</Text>
-                <TextInput style={{ marginLeft: 34, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, time: text }))} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                <Text style={{ fontWeight: 'bold' }}>Phòng học:</Text>
-                <TextInput style={{ marginLeft: 25, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, location: text }))} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                <Text style={{ fontWeight: 'bold' }}>Giảng viên:</Text>
-                <TextInput style={{ marginLeft: 26, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, instructor: text }))} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                <Text style={{ fontWeight: 'bold' }}>Chọn số tuần:</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 50 }}>
-                  <TouchableOpacity onPress={handleDecrease}>
-                    <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>-</Text>
-                  </TouchableOpacity>
-                  <TextInput
-                    style={{ height: 30, width: 100, borderRadius: 5, textAlign: 'center', borderWidth: 1, borderColor: 'gray' }}
-                    onChangeText={handleTextChange}
-                    value={numberOfWeeks.toString()}
-                    keyboardType="numeric"
-                  />
-                  <TouchableOpacity onPress={handleIncrease}>
-                    <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>+</Text>
-                  </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
+              <View style={styles.containerModal}>
+                <View style={styles.modalContent}>
+                  <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontWeight: 'bold', color: 'green', alignItems: 'center', justifyContent: 'center' }}>THÊM LỊCH HỌC</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
+                    {/* {isTitleEmpty && <Text style={{ color: 'red' }}>*</Text>} */}
+                    <Text style={{ fontWeight: 'bold' }}>Tên môn học:</Text>
+                    <TextInput style={{ marginLeft: 10, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={handleTitleChange} />
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                    <Text style={{ fontWeight: 'bold' }}>Thời gian:</Text>
+                    <TextInput style={{ marginLeft: 34, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, time: text }))} />
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                    <Text style={{ fontWeight: 'bold' }}>Phòng học:</Text>
+                    <TextInput style={{ marginLeft: 25, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, location: text }))} />
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                    <Text style={{ fontWeight: 'bold' }}>Giảng viên:</Text>
+                    <TextInput style={{ marginLeft: 26, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, instructor: text }))} />
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                    <Text style={{ fontWeight: 'bold' }}>Chọn số tuần:</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 50 }}>
+                      <TouchableOpacity onPress={handleDecrease}>
+                        <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>-</Text>
+                      </TouchableOpacity>
+                      <TextInput
+                        style={{ height: 30, width: 100, borderRadius: 5, textAlign: 'center', borderWidth: 1, borderColor: 'gray' }}
+                        onChangeText={handleTextChange}
+                        value={numberOfWeeks.toString()}
+                        keyboardType="numeric"
+                      />
+                      <TouchableOpacity onPress={handleIncrease}>
+                        <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>+</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 200, marginTop: 10 }}>
+                      <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, backgroundColor: '#003', alignItems: 'center', justifyContent: 'center' }} onPress={handleBackButton}>
+                        <Text style={{ color: 'white' }}>Quay lại</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, backgroundColor: isTitleEmpty ? 'lightgray' : '#0D1282', alignItems: 'center', justifyContent: 'center' }} onPress={addTask} disabled={isTitleEmpty}>
+                        <Text style={{ color: 'white' }}>Thêm</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                  </View>
                 </View>
               </View>
-
-              <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 200, marginTop: 10 }}>
-                  <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, backgroundColor: '#003', alignItems: 'center', justifyContent: 'center' }} onPress={handleBackButton}>
-                    <Text style={{ color: 'white' }}>Quay lại</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, backgroundColor: isTitleEmpty ? 'lightgray' : '#0D1282', alignItems: 'center', justifyContent: 'center' }} onPress={addTask} disabled={isTitleEmpty}>
-                    <Text style={{ color: 'white' }}>Thêm</Text>
-                  </TouchableOpacity>
-                </View>
-
-              </View>
-            </View>
-          </View>
-          </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
           </TouchableWithoutFeedback>
         </Modal>
-  
+
         <View style={{ height: flatListHeight }}>
           <FlatList
             data={uniqueTasks(tasks[currentDay] ?? [])}
@@ -681,35 +712,35 @@ const Schedule = () => {
           />
         </View>
         <Modal visible={isModal2Visible} transparent={true} animationType="slide">
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
-          <View style={styles.containerModal}>
-            <View style={styles.modalContent}>
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontWeight: 'bold', color: 'green', alignItems: 'center', justifyContent: 'center' }}>SỬA LỊCH HỌC</Text>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
-             {/* {isTitleUpdateEmpty && <Text style={{ color: 'red' }}>*</Text>} */}
-                <Text style={{ fontWeight: 'bold' }}>Tên môn học: </Text>
-                <TextInput style={{ marginLeft: 10, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={handleTitleUpdateChange}
-                  value={newTask.title} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                <Text style={{ fontWeight: 'bold' }}>Thời gian:</Text>
-                <TextInput style={{ marginLeft: 34, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, time: text }))}
-                  value={newTask.time} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                <Text style={{ fontWeight: 'bold' }}>Phòng học:</Text>
-                <TextInput style={{ marginLeft: 25, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, location: text }))}
-                  value={newTask.location} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                <Text style={{ fontWeight: 'bold' }}>Giảng viên:</Text>
-                <TextInput style={{ marginLeft: 26, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, instructor: text }))}
-                  value={newTask.instructor} />
-              </View>
-              {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
+              <View style={styles.containerModal}>
+                <View style={styles.modalContent}>
+                  <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontWeight: 'bold', color: 'green', alignItems: 'center', justifyContent: 'center' }}>SỬA LỊCH HỌC</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
+                    {/* {isTitleUpdateEmpty && <Text style={{ color: 'red' }}>*</Text>} */}
+                    <Text style={{ fontWeight: 'bold' }}>Tên môn học: </Text>
+                    <TextInput style={{ marginLeft: 10, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={handleTitleUpdateChange}
+                      value={newTask.title} />
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                    <Text style={{ fontWeight: 'bold' }}>Thời gian:</Text>
+                    <TextInput style={{ marginLeft: 34, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, time: text }))}
+                      value={newTask.time} />
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                    <Text style={{ fontWeight: 'bold' }}>Phòng học:</Text>
+                    <TextInput style={{ marginLeft: 25, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, location: text }))}
+                      value={newTask.location} />
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                    <Text style={{ fontWeight: 'bold' }}>Giảng viên:</Text>
+                    <TextInput style={{ marginLeft: 26, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, instructor: text }))}
+                      value={newTask.instructor} />
+                  </View>
+                  {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                 <Text style={{ fontWeight: 'bold' }}>Chọn số tuần:</Text>
                 <TouchableOpacity onPress={handleDecrease1}>
                   <Text style={{ fontSize: 20, paddingHorizontal: 10,  marginLeft: 50 }}>-</Text>
@@ -729,30 +760,30 @@ const Schedule = () => {
                   <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>+</Text>
                 </TouchableOpacity>
               </View> */}
-              <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 200, marginTop: 10 }}>
-                  <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, marginTop: 5, backgroundColor: '#003', alignItems: 'center', justifyContent: 'center' }} onPress={handleBackUpdateButton}>
-                    <Text style={{ color: 'white' }}>Quay lại</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, marginTop: 5, backgroundColor: isTitleUpdateEmpty ? 'lightgray' : '#0D1282', alignItems: 'center', justifyContent: 'center' }}
-                    onPress={() => {
-                      if (!isTitleUpdateEmpty) {
-                        editTask(newTask);
-                        setModal2Visible(false);
-                      }
-                    }}
-                    disabled={isTitleUpdateEmpty}>
-                    <Text style={{ color: 'white' }}>Cập nhật</Text>
-                  </TouchableOpacity>
-                </View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 200, marginTop: 10 }}>
+                      <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, marginTop: 5, backgroundColor: '#003', alignItems: 'center', justifyContent: 'center' }} onPress={handleBackUpdateButton}>
+                        <Text style={{ color: 'white' }}>Quay lại</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{ width: 80, borderRadius: 5, height: 30, marginTop: 5, backgroundColor: isTitleUpdateEmpty ? 'lightgray' : '#0D1282', alignItems: 'center', justifyContent: 'center' }}
+                        onPress={() => {
+                          if (!isTitleUpdateEmpty) {
+                            editTask(newTask);
+                            setModal2Visible(false);
+                          }
+                        }}
+                        disabled={isTitleUpdateEmpty}>
+                        <Text style={{ color: 'white' }}>Cập nhật</Text>
+                      </TouchableOpacity>
+                    </View>
 
+                  </View>
+                </View>
               </View>
-            </View>
-          </View>
-          </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
           </TouchableWithoutFeedback>
         </Modal>
-      
+
       </View>
       {isLoading ? (
         <View style={loadPage.loadingContainer}>
