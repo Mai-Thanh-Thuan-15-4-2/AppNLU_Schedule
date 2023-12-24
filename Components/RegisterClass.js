@@ -132,7 +132,6 @@ export default function RegisterClass() {
 
     const doSearch = (text) => {
         const data = subjectClassAll.filter(item => item.idSubject.indexOf(text) !== -1 || item.name.toLowerCase().indexOf(text.toLowerCase()) !== -1);
-        console.log(data)
         setSubjectClasses(data);
     }
 
@@ -192,7 +191,7 @@ export default function RegisterClass() {
                         <Text style={[styles.cell, { flex: 0.3, textAlign: 'center', color: '#2196F3' }]}>Nhóm: {item.group}</Text>
                     </View>
                     <View>
-                        <Text style={{ flex: 1, fontStyle: 'italic', }}>TKB: {item.schedule}</Text>
+                        <Text style={{ flex: 1, fontStyle: 'italic', }}>TKB: {item.schedule.replace(/<hr>/g, "\n")}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -224,7 +223,6 @@ export default function RegisterClass() {
         setIsLoading(true);
         await LoginDefault();
         let result = await registerSubject(item.id);
-        console.log(result);
         if (result == null) {
             Toast.show({
                 type: 'error',

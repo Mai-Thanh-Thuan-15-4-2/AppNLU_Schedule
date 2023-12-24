@@ -2,24 +2,25 @@ import React, { useState, useEffect } from 'react';
 import Toast from 'react-native-toast-message';
 import { Text, StyleSheet, View, Image, TextInput, BackHandler, TouchableWithoutFeedback, Keyboard, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { LoginNLU } from '../service/NLUApiCaller';
-import { LoginApi} from '../service/NLUAppApiCaller';
+import { LoginApi } from '../service/NLUAppApiCaller';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../BaseStyle/Style.js';
 
 export default function Login({ navigation }) {
     var isBack = false;
-    var username = ''
-    var password = ''
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const [isAutoLogin, setIsAutoLogin] = useState('')
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         AsyncStorage.getItem('username').then(usernameStoraged => {
             if (usernameStoraged) {
-                username = usernameStoraged;
+                setUsername(usernameStoraged);
                 AsyncStorage.getItem('password').then(passwordStoraged => {
                     if (passwordStoraged) {
-                        password = passwordStoraged;
-                        login();
+                        setPassword(passwordStoraged);
+                        setIsAutoLogin(true);
                     }
                 })
             }
@@ -56,6 +57,12 @@ export default function Login({ navigation }) {
             onInactive();
         };
     }, [navigation]);
+
+    useEffect(() => {
+        if (isAutoLogin) {
+            login();
+        }
+    }, [isAutoLogin])
 
     async function login() {
         if (username === '') {
@@ -116,8 +123,8 @@ export default function Login({ navigation }) {
             <View style={styles.container}>
                 <Image source={require('../resource/images/logo_nlu.png')} style={styles.logo} />
                 <View style={styles.forms}>
-                    <TextInput style={styles.inputText} placeholderTextColor={"lightgray"} placeholder='Mã số sinh viên' onChangeText={(val) => username = val} />
-                    <TextInput style={styles.inputText} placeholderTextColor={"lightgray"} placeholder='Mật khẩu' secureTextEntry={true} onChangeText={(val) => password = val} />
+                    <TextInput style={styles.inputText} placeholderTextColor={"lightgray"} placeholder='Mã số sinh viên' value={username} onChangeText={(val) => setUsername(val)} />
+                    <TextInput style={styles.inputText} placeholderTextColor={"lightgray"} placeholder='Mật khẩu' value={password} secureTextEntry={true} onChangeText={(val) => setPassword(val)} />
                     <TouchableOpacity style={styles.loginButton} onPress={login}>
                         <Text style={styles.titleButton}>ĐĂNG NHẬP</Text>
                     </TouchableOpacity>
