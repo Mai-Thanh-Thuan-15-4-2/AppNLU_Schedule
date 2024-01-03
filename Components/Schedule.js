@@ -366,7 +366,6 @@ const Schedule = () => {
 
     fetchSemesters();
   }, []);
-  // Xem lịch theo học kỳ
 // Xem lịch theo học kỳ
 useEffect(() => {
   setIsLoading(true);
@@ -380,7 +379,7 @@ useEffect(() => {
     if (now.isBetween(startDate, endDate, undefined, '[]')) {
       setCurrentDay(now.format('20YY-MM-DD'));
       setSelectedDate({
-        [now.format('20YY-MM-DD')]: {
+        [now.format('YYYY-MM-DD')]: {
           selected: true,
           selectedColor: '#0D1282',
         },
