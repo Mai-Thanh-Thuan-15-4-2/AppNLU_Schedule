@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Keyboard, PanResponder, TouchableWithoutFeedback, KeyboardAvoidingView, TouchableOpacity, Dimensions, FlatList, View, Text, TextInput, Modal, ActivityIndicator, StyleSheet } from 'react-native';
+import {SafeAreaView, Keyboard, PanResponder, TouchableWithoutFeedback, KeyboardAvoidingView, TouchableOpacity, Dimensions, FlatList, View, Text, TextInput, Modal, ActivityIndicator, StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment/min/moment-with-locales';
@@ -495,11 +495,6 @@ useEffect(() => {
           const dayOfWeek = startDate.day();
           const currentWeek = startDate.week();
           const endWeek = endDate.week();
-
-          // console.log(subject + 'sub')
-          // console.log(moment(startDate) + 'str')
-          // console.log(currentWeek + 'currW')
-          // console.log(endWeek + 'endW')
           if (currentWeek > endWeek) {
             let temp = startDate;
             while (temp.isSameOrBefore(endDate)) {
@@ -561,7 +556,6 @@ useEffect(() => {
   const [swipeCount, setSwipeCount] = useState(0);
 
   const handleSwipeRight = () => {
-    console.log(currentDay +"=====")
     setSwipeCount(prevCount => prevCount - 1);
   };
 
@@ -571,9 +565,7 @@ useEffect(() => {
 
   useEffect(() => {
     const updatedDate = moment().add(swipeCount, 'months').format('YYYY-MM-DD');
-    console.log(swipeCount)
     setCurrentDay(updatedDate);
-    console.log(currentDay)
   }, [swipeCount]);
 
   const panResponder = useRef(
@@ -712,19 +704,18 @@ useEffect(() => {
             </KeyboardAvoidingView>
           </TouchableWithoutFeedback>
         </Modal>
-
-        <View style={{ height: flatListHeight }}>
           {totalTasksForCurrentDay === 0 ? (
             <View style={styles.centeredText}>
               <Text style={{ fontWeight: 'bold', color: "green" }}>Hôm nay không có môn học nào 😊😉</Text>
             </View>
           ) : (
             <FlatList
+            style={[{ marginTop: 5, marginBottom: 380, marginLeft: 5}]}
               data={uniqueTasks(tasks[currentDay] ?? [])}
               keyExtractor={item => `${item.id}-${item.time}`}
               renderItem={({ item }) => (
+                <SafeAreaView style={{ flex: 1}}>
                 <View style={styles.containerFlatList}>
-
                   <View style={{ flexDirection: 'row' }}>
                     <Text>
                       <Icon name="book-outline" size={15} color="#000" />:{' '}
@@ -744,10 +735,10 @@ useEffect(() => {
                   <Text><Icon name="alarm-outline" size={15} color="#000" />: <Text style={{ color: 'red' }}>{item.time && item.time.length > 20 ? item.time.substring(0, 20) + '...' : item.time}, {item.location && item.location.length > 15 ? item.location.substring(0, 15) + '...' : item.location}</Text></Text>
                   <Text><Icon name="person-outline" size={15} color="#000" />: <Text>{item.instructor && item.instructor.length > 35 ? item.instructor.substring(0, 35) + '...' : item.instructor}</Text></Text>
                 </View>
+                </SafeAreaView>
               )}
             />
           )}
-        </View>
         <Modal visible={isModal2Visible} transparent={true} animationType="slide">
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingContainer}>
@@ -889,7 +880,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'black',
     borderRadius: 10,
-    paddingHorizontal: 10
+    padding: 10
   },
   flatListContent: {
 
@@ -917,7 +908,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   centeredText: {
-    flex: 1,
+    marginTop: 100, marginBottom: 200, marginLeft: 5,
     justifyContent: 'center',
     alignItems: 'center',
   },
