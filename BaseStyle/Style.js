@@ -33,7 +33,7 @@ export const loadPage = {
     height: 150,
     justifyContent: 'center',
     borderRadius: 10,
-    opacity: 0.5,
+    opacity: 0.2,
   },
 
 };
