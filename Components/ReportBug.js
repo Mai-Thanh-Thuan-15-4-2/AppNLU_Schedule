@@ -21,14 +21,23 @@ const ReportBug = ({ navigation }) => {
         try {
           setIsLoading(true);
           const message = await sendReport(bugDescription);
-          
-          Toast.show({
-            type: 'success',
-            text1: 'Cảm ơn bạn đã phản hồi!!',
-            visibilityTime: 2000,
-            autoHide: true,
-          });
+          if(message){
+            Toast.show({
+              type: 'success',
+              text1: 'Cảm ơn bạn đã phản hồi!!',
+              visibilityTime: 2000,
+              autoHide: true,
+            });
+          }else{
+            Toast.show({
+              type: 'error',
+              text1: 'Ôi lỗi gì nè, bạn kiểm tra lại nhé!!',
+              visibilityTime: 2000,
+              autoHide: true,
+            });
+          }
           setBugDescription('');
+          
         } catch (error) {
           Toast.show({
             type: 'error',
