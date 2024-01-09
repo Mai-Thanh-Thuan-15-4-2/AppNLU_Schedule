@@ -9,52 +9,43 @@ const ReportBug = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmitBug = async () => {
-        if(bugDescription.trim() === ''){
-          Toast.show({
-            type: 'info',
-            text1: 'Vui lòng nhập điều bạn muốn nói!!!',
-            visibilityTime: 2000,
-            autoHide: true,
-          });
-          return;
-        }
-        try {
-          setIsLoading(true);
-          const message = await sendReport(bugDescription);
-          if(message){
-            Toast.show({
-              type: 'success',
-              text1: 'Cảm ơn bạn đã phản hồi!!',
-              visibilityTime: 2000,
-              autoHide: true,
-            });
-          }else{
-            Toast.show({
-              type: 'error',
-              text1: 'Ôi lỗi gì nè, bạn kiểm tra lại nhé!!',
-              visibilityTime: 2000,
-              autoHide: true,
-            });
-          }
-          setBugDescription('');
-          
-        } catch (error) {
-          Toast.show({
-            type: 'error',
-            text1: 'Có lỗi xảy ra!',
-            text2: message,
-            visibilityTime: 2000,
-            autoHide: true,
-          });
-         
-        }
-        setIsLoading(false);
-        
+    if (bugDescription.trim() === '') {
+      Toast.show({
+        type: 'info',
+        text1: 'Vui lòng nhập điều bạn muốn nói!!!',
+        visibilityTime: 2000,
+        autoHide: true,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    const message = await sendReport(bugDescription);
+    if (message) {
+      Toast.show({
+        type: 'success',
+        text1: 'Cảm ơn bạn đã phản hồi!!',
+        visibilityTime: 2000,
+        autoHide: true,
+      });
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Ôi lỗi gì nè, bạn kiểm tra lại nhé!!',
+        visibilityTime: 2000,
+        autoHide: true,
+      });
+    }
+    setBugDescription('');
+
+
+    setIsLoading(false);
+
   };
 
   return (
     <View style={styles.container}>
-  
+
       <TextInput
         style={[styles.input]}
         placeholder="Nhập điều bạn muốn nói :3"
@@ -64,7 +55,7 @@ const ReportBug = ({ navigation }) => {
         onChangeText={(text) => setBugDescription(text)}
       />
       <TouchableOpacity style={styles.button} onPress={handleSubmitBug}>
-        <Text style={{color: colors.white}}>Gửi</Text>
+        <Text style={{ color: colors.white }}>Gửi</Text>
       </TouchableOpacity>
       {isLoading ? (
         <View style={loadPage.loadingContainer}>
