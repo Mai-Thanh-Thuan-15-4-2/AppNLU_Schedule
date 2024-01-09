@@ -24,7 +24,7 @@ const ReportBug = ({ navigation }) => {
           
           Toast.show({
             type: 'success',
-            text1: message,
+            text1: 'Cảm ơn bạn đã phản hồi!!',
             visibilityTime: 2000,
             autoHide: true,
           });

@@ -47,7 +47,7 @@ fetchNotification = async () => {
       <WebView
         originWhitelist={['*']}
         source={{ html: notification.content }}
-        style={{ flex: 1 }}
+        style={{ flex: 1, padding: 5 }}
       />
     );
   }

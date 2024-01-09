@@ -656,19 +656,19 @@ useEffect(() => {
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
                     {/* {isTitleEmpty && <Text style={{ color: 'red' }}>*</Text>} */}
                     <Text style={{ fontWeight: 'bold' }}>Tên môn học:</Text>
-                    <TextInput style={{ marginLeft: 10, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={handleTitleChange} />
+                    <TextInput style={{ marginLeft: 10, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5, paddingLeft: 10 }} onChangeText={handleTitleChange} />
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                     <Text style={{ fontWeight: 'bold' }}>Thời gian:</Text>
-                    <TextInput style={{ marginLeft: 34, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, time: text }))} />
+                    <TextInput style={{ marginLeft: 34, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5, paddingLeft: 10 }} onChangeText={text => setNewTask(prev => ({ ...prev, time: text }))} />
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                     <Text style={{ fontWeight: 'bold' }}>Phòng học:</Text>
-                    <TextInput style={{ marginLeft: 25, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, location: text }))} />
+                    <TextInput style={{ marginLeft: 25, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5, paddingLeft: 10 }} onChangeText={text => setNewTask(prev => ({ ...prev, location: text }))} />
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                     <Text style={{ fontWeight: 'bold' }}>Giảng viên:</Text>
-                    <TextInput style={{ marginLeft: 26, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, instructor: text }))} />
+                    <TextInput style={{ marginLeft: 26, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5, paddingLeft: 10 }} onChangeText={text => setNewTask(prev => ({ ...prev, instructor: text }))} />
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                     <Text style={{ fontWeight: 'bold' }}>Chọn số tuần:</Text>
@@ -750,22 +750,22 @@ useEffect(() => {
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
                     {/* {isTitleUpdateEmpty && <Text style={{ color: 'red' }}>*</Text>} */}
                     <Text style={{ fontWeight: 'bold' }}>Tên môn học: </Text>
-                    <TextInput style={{ marginLeft: 10, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={handleTitleUpdateChange}
+                    <TextInput style={{ marginLeft: 10, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5, paddingLeft: 10 }} onChangeText={handleTitleUpdateChange}
                       value={newTask.title} />
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                     <Text style={{ fontWeight: 'bold' }}>Thời gian:</Text>
-                    <TextInput style={{ marginLeft: 34, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, time: text }))}
+                    <TextInput style={{ marginLeft: 34, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5, paddingLeft: 10 }} onChangeText={text => setNewTask(prev => ({ ...prev, time: text }))}
                       value={newTask.time} />
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                     <Text style={{ fontWeight: 'bold' }}>Phòng học:</Text>
-                    <TextInput style={{ marginLeft: 25, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, location: text }))}
+                    <TextInput style={{ marginLeft: 25, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5, paddingLeft: 10 }} onChangeText={text => setNewTask(prev => ({ ...prev, location: text }))}
                       value={newTask.location} />
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                     <Text style={{ fontWeight: 'bold' }}>Giảng viên:</Text>
-                    <TextInput style={{ marginLeft: 26, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5 }} onChangeText={text => setNewTask(prev => ({ ...prev, instructor: text }))}
+                    <TextInput style={{ marginLeft: 26, height: 30, width: '72%', borderColor: 'gray', borderWidth: 1, borderRadius: 5, paddingLeft: 10 }} onChangeText={text => setNewTask(prev => ({ ...prev, instructor: text }))}
                       value={newTask.instructor} />
                   </View>
                   {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>

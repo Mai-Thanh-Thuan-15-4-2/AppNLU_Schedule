@@ -74,7 +74,6 @@ renderItem = ({ item }) => (
         data={notificationList}
         renderItem={this.renderItem}
         keyExtractor={item => item.id}
-        
       />
       
     );
@@ -86,6 +85,7 @@ const styles = StyleSheet.create({
   notification: {
     backgroundColor: '#F5EFE7',
     shadowColor: '#000',
+    opacity: 0.9,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 4,

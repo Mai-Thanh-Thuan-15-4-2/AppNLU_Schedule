@@ -5,7 +5,12 @@
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "56c40a85-dbcc-4c4c-b2ac-67b50cbd5521"
+      }
+    }
   },
   "name": "AppNLU_Schedule"
 }
